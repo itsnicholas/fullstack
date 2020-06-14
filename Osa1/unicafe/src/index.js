@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 
 const StatisticLine = (props) => {
   return (
-    <div>
-      {props.text} {props.value} {props.text2}
-    </div>
+    <tr>
+      <td>{props.text} {props.value} {props.text2}</td>
+    </tr>
   )
 }
 
@@ -19,14 +19,16 @@ const Statistics = (props) => {
   }
   
   return (
-    <div>
-      <StatisticLine text="good" value ={props.good} />
-      <StatisticLine text="neutral" value ={props.neutral} />
-      <StatisticLine text="bad" value ={props.bad} />
-      <StatisticLine text="all" value ={props.good + props.bad + props.neutral} />
-      <StatisticLine text="average" value ={(props.good - props.bad) / (props.good + props.bad + props.neutral)} />
-      <StatisticLine text="positive" value ={props.good / (props.good + props.bad + props.neutral) * 100} text2="%" />
-    </div>  
+    <table>
+      <tbody>
+        <StatisticLine text="good" value ={props.good} />
+        <StatisticLine text="neutral" value ={props.neutral} />
+        <StatisticLine text="bad" value ={props.bad} />
+        <StatisticLine text="all" value ={props.good + props.bad + props.neutral} />
+        <StatisticLine text="average" value ={(props.good - props.bad) / (props.good + props.bad + props.neutral)} />
+        <StatisticLine text="positive" value ={props.good / (props.good + props.bad + props.neutral) * 100} text2="%" />
+      </tbody>
+    </table>  
   )    
 }
 
