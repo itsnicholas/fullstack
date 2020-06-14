@@ -2,6 +2,14 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 const Statistics = (props) => {
+  if (props.good + props.neutral + props.bad === 0) {
+    return (
+      <div>
+        No feedback given
+      </div>
+    )
+  }
+  
   return (
     <div>
       good {props.good}
