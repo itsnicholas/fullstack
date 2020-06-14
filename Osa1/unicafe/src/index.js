@@ -1,6 +1,19 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
+const Statistics = (props) => {
+  return (
+    <div>
+      good {props.good}
+      <br />neutral {props.neutral}
+      <br />bad {props.bad}
+      <br />all {props.good + props.bad + props.neutral}
+      <br />average {(props.good - props.bad) / (props.good + props.bad + props.neutral)}
+      <br />positive  {props.good / (props.good + props.bad + props.neutral) * 100} %
+    </div>  
+  )    
+}
+
 const App = () => {
   // tallenna napit omaan tilaansa
   const [good, setGood] = useState(0)
@@ -24,12 +37,7 @@ const App = () => {
       <h1>
         statistics
       </h1>
-      good {good}
-      <br />neutral {neutral}
-      <br />bad {bad}
-      <br />all {good + bad + neutral}
-      <br />average {(good - bad) / (good + bad + neutral)}
-      <br />positive  {good / (good + bad + neutral) * 100} %
+      <Statistics good={good} bad={bad} neutral={neutral} />
     </div>
   )
 }
