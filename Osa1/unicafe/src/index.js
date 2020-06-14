@@ -9,6 +9,14 @@ const StatisticLine = (props) => {
   )
 }
 
+const Button = (props) => {
+  return (
+    <button onClick={props.onClick}>
+      {props.name}
+    </button>
+  )
+}
+
 const Statistics = (props) => {
   if (props.good + props.neutral + props.bad === 0) {
     return (
@@ -43,15 +51,9 @@ const App = () => {
       <h1>
         give feedback
       </h1>
-      <button onClick={() => setGood(good + 1)}>
-        good
-      </button>
-      <button onClick={() => setNeutral(neutral + 1)}>
-        neutral
-      </button>
-      <button onClick={() => setBad(bad + 1)}>
-        bad
-      </button>
+      <Button name="good" onClick={() => setGood(good + 1)} />
+      <Button name="neutral" onClick={() => setNeutral(neutral + 1)} />
+      <Button name="bad" onClick={() => setBad(bad + 1)} />
       <h1>
         statistics
       </h1>
