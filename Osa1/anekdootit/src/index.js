@@ -11,12 +11,39 @@ const Button = (props) => {
 
 const App = (props) => {
   const [selected, setSelected] = useState(0)
+  const [points, setPoints] = useState(() => Array(props.anecdotes.length).fill(0))
+  const [largest, setLargest] = useState(0)
+  const [iValue, setIValue] = useState(0)
+
+  for ( let i = 0; i < points.length; i++ ) {
+    if ( largest < points[i] ) {
+      setLargest(points[i])
+      setIValue(i)
+    }
+  }
+
+  const increaseByOne = () => {
+    const copy = [...points]
+    copy[selected] += 1
+    setPoints(copy)
+  }
 
   return (
     <div>
+      <h1>
+        Anecdote of the day
+      </h1>
       {props.anecdotes[selected]}
-      <br /><Button name="next anecdote" onClick={() => setSelected(Math.floor(Math.random() * 6))} />
-    </div>
+      <br />has {points[selected]} votes
+      <br />
+      <Button name="vote" onClick={increaseByOne} />
+      <Button name="next anecdote" onClick={() => setSelected(Math.floor(Math.random() * 6))} />
+      <h1>
+        Anecdote with most votes
+      </h1>
+      {props.anecdotes[iValue]}
+      <br />has {points[iValue]} votes
+  </div>
   )
 }
 
