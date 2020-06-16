@@ -1,6 +1,29 @@
 import React, { useState } from 'react'
 
-const Note  = ( {person} ) => {
+const Persons  = (props) => {
+    return (
+      <div>
+        {props.persons.filter(person => person.name.toLowerCase().includes(props.newSearch.toLowerCase())).map(filteredPerson => ( 
+        <ul>
+          <Info key={filteredPerson.name} person={filteredPerson} />
+        </ul>
+      ))}
+      </div>
+    )
+}
+
+const Filter  = (props) => {
+    return (
+        <div>
+        filter shown with <input 
+          value={props.search}
+          onChange={props.change} 
+        />
+      </div>
+    )
+}
+
+const Info  = ( {person} ) => {
       return (
         <div>
           <p>
@@ -54,12 +77,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-          filter shown with <input 
-            value={newSearch}
-            onChange={handleSearchChange} 
-          />
-        </div>
+      <Filter change={handleSearchChange} search={newSearch} />
       <h2>add a new</h2>
       <form onSubmit={addName}>
         <div>
@@ -79,11 +97,7 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      {persons.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase())).map(filteredPerson => ( 
-        <ul>
-          <Note key={filteredPerson.name} person={filteredPerson} />
-        </ul>
-      ))}
+      <Persons persons={persons} newSearch={newSearch} />
     </div>
   )
 
