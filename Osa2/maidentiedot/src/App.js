@@ -12,18 +12,6 @@ const Filter  = (props) => {
     )
 }
 
-const Countries  = (props) => {
-    return (
-      <div>
-        {props.countries.map(filteredCountry => ( 
-        <ul>
-          <Country key={filteredCountry.name} country={filteredCountry} />
-        </ul>
-      ))}
-      </div>
-    )
-}
-
 const OneCountry  = ( {country} ) => {
   const [weather, setWeather] = useState({location:{}, current:{}})
   const apiKey = process.env.REACT_APP_API_KEY
@@ -62,10 +50,10 @@ const OneCountry  = ( {country} ) => {
 }
 
 const Country  = ( {country} ) => {
-    return (
+  return (
       <div>
         <p>
-        {country.name}
+        {country.name} 
         </p>
       </div>
     )
@@ -96,7 +84,11 @@ const App = () => {
     return (
       <div>
         Find countries<Filter change={handleSearchChange} search={newSearch} />
-        <Countries countries={results} />
+        {results.map(filteredCountry => ( 
+        <ul>
+          <Country key={filteredCountry.name} country={filteredCountry} /><button onClick={() => setNewSearch(filteredCountry.name)}>Show</button>
+        </ul>
+      ))}
       </div>
     )
     } else if (results.length === 1) {
