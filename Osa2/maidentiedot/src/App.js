@@ -49,16 +49,6 @@ const OneCountry  = ( {country} ) => {
   )
 }
 
-const Country  = ( {country} ) => {
-  return (
-      <div>
-        <p>
-        {country.name} 
-        </p>
-      </div>
-    )
-}
-
 const App = () => {
     const [ countries, setCountries] = useState([])
     const [ newSearch, setNewSearch] = useState('')
@@ -86,7 +76,7 @@ const App = () => {
         Find countries<Filter change={handleSearchChange} search={newSearch} />
         {results.map(filteredCountry => ( 
         <ul>
-          <Country key={filteredCountry.name} country={filteredCountry} /><button onClick={() => setNewSearch(filteredCountry.name)}>Show</button>
+          {filteredCountry.name} <button onClick={() => setNewSearch(filteredCountry.name)}>Show</button>
         </ul>
       ))}
       </div>
