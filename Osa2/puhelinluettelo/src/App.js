@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
 
-const Persons  = (props) => {
-    return (
-      <div>
-        {props.persons.filter(person => person.name.toLowerCase().includes(props.newSearch.toLowerCase())).map(filteredPerson => ( 
-        <ul>
-          <Info key={filteredPerson.name} person={filteredPerson} />
-        </ul>
-      ))}
-      </div>
-    )
-}
-
 const Filter  = (props) => {
     return (
         <div>
@@ -25,14 +13,38 @@ const Filter  = (props) => {
 }
 
 const Info  = ( {person} ) => {
-      return (
+    return (
+      <div>
+        <p>
+        {person.name} {person.number}
+        </p>
+      </div>
+    )
+}
+
+const PersonForm = (props) => {
+  return (
+    <div>
+      <form onSubmit={props.onSubmit}>
         <div>
-          <p>
-          {person.name} {person.number}
-          </p>
+          name: <input 
+            value={props.value1}
+            onChange={props.onChange1} 
+          />
         </div>
-      )
-  }
+        <div>
+          number: <input 
+            value={props.value2}
+            onChange={props.onChange2} 
+          />
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+    </div>
+  )
+}
 
 const App = () => {
   const [ persons, setPersons] = useState([]) 
@@ -83,30 +95,31 @@ const App = () => {
     }  
   }
 
+  const deleteName = (id, name) => {
+    if (window.confirm("Delete " + name + "?")) {
+      personService
+        .deleteId(id)
+        .then(setPersons(persons.filter(person => person.id !== id)))
+        .catch(error => {
+          console.log(error)
+        })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter change={handleSearchChange} search={newSearch} />
       <h2>add a new</h2>
-      <form onSubmit={addName}>
-        <div>
-          name: <input 
-            value={newName}
-            onChange={handleNameChange} 
-          />
-        </div>
-        <div>
-          number: <input 
-            value={newNumber}
-            onChange={handleNumberChange} 
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm onSubmit={addName} value1={newName}
+            onChange1={handleNameChange} value2={newNumber}
+            onChange2={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons persons={persons} newSearch={newSearch} />
+      {persons.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase())).map(filteredPerson => ( 
+        <ul>
+          <Info key={filteredPerson.name} person={filteredPerson} /> <button onClick={() => deleteName(filteredPerson.id, filteredPerson.name)}>delete</button>
+        </ul>
+      ))}
     </div>
   )
 
