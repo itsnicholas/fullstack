@@ -2,13 +2,28 @@
   "persons": [
     {
       "name": "Ada Lovelace",
-      "number": "39-44-5323523",
+      "number": "987 654 321",
       "id": 2
     },
     {
       "name": "Dan Abramov",
-      "number": "12-43-234345",
+      "number": "12-43-234346",
       "id": 3
+    },
+    {
+      "name": "Uusi2",
+      "number": "222 222 222",
+      "id": 6
+    },
+    {
+      "name": "Uusi3",
+      "number": "333 333 333",
+      "id": 7
+    },
+    {
+      "name": "Uusi",
+      "number": "111 111 111",
+      "id": 8
     }
   ]
 }
