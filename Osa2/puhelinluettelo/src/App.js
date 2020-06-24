@@ -46,11 +46,24 @@ const PersonForm = (props) => {
   )
 }
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="message">
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [ persons, setPersons] = useState([]) 
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
-  const [ newSearch, setNewSearch] = useState('')
+  const [ newSearch, setNewSearch ] = useState('')
+  const [ message, setMessage ] = useState(null)
 
   useEffect(() => {
     personService
@@ -78,20 +91,25 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault()
     if (persons.find(person => person.name === newName)) {
-      window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
-      const personId = persons.find(person => person.name === newName).id
-      const nameObject = {
-        name: newName,
-        number: newNumber
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const personId = persons.find(person => person.name === newName).id
+        const nameObject = {
+          name: newName,
+          number: newNumber
+        }
+        personService
+        .update(personId, nameObject)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== personId ? person : returnedPerson))
+          setMessage(`'${newName}' was updated`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          console.log(error)
+        })
       }
-      personService
-      .update(personId, nameObject)
-      .then(returnedPerson => {
-        setPersons(persons.map(person => person.id !== personId ? person : returnedPerson))
-      })
-      .catch(error => {
-        console.log(error)
-      })
     } else {
       const nameObject = {
         name: newName,
@@ -101,6 +119,10 @@ const App = () => {
       .create(nameObject)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
+        setMessage(`'${newName}' was added`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
       .catch(error => {
         console.log(error)
@@ -114,7 +136,11 @@ const App = () => {
     if (window.confirm("Delete " + name + "?")) {
       personService
         .deleteId(id)
-        .then(setPersons(persons.filter(person => person.id !== id)))
+        .then(setPersons(persons.filter(person => person.id !== id)),
+        setMessage(`'${name}' was deleted`),
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000))
         .catch(error => {
           console.log(error)
         })
@@ -124,6 +150,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter change={handleSearchChange} search={newSearch} />
       <h2>add a new</h2>
       <PersonForm onSubmit={addName} value1={newName}
