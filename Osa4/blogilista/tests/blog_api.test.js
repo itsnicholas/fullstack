@@ -50,6 +50,23 @@ test('post new blog and is it there', async () => {
 
 })
 
+test('post new blog and see if likes are zero', async () => {
+  const newBlog = {
+    title: "A second one", 
+    author: "A second person", 
+    url: "https://somestuff2/", 
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    blogsAtEnd.map((blog) => expect(blog.likes).toBeGreaterThanOrEqual(0))
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
