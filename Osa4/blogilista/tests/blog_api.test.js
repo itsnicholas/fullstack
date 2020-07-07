@@ -28,6 +28,28 @@ test('blogs have an id', async () => {
   response.body.map((blog) => expect(blog.id).toBeDefined())
 })
 
+test('post new blog and is it there', async () => {
+  const newBlog = {
+    title: "A new one", 
+    author: "A person", 
+    url: "https://somestuff/", 
+    likes: 1, 
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+
+  const titles = blogsAtEnd.map(n => n.title)
+  expect(titles).toContain('A new one')
+
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
