@@ -67,6 +67,18 @@ test('post new blog and see if likes are zero', async () => {
     blogsAtEnd.map((blog) => expect(blog.likes).toBeGreaterThanOrEqual(0))
 })
 
+test('post new blog without title and url, and expect error', async () => {
+  const newBlog = {
+    author: "A third person" 
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
