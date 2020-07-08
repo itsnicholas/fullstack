@@ -10,10 +10,10 @@ const User = require('../models/user')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  
+
   let blogObject = new Blog(helper.initialBlogs[0])
   await blogObject.save()
-  
+
   blogObject = new Blog(helper.initialBlogs[1])
   await blogObject.save()
 })
@@ -32,10 +32,10 @@ test('blogs have an id', async () => {
 
 test('post new blog and is it there', async () => {
   const newBlog = {
-    title: "A new one", 
-    author: "A person", 
-    url: "https://somestuff/", 
-    likes: 1, 
+    title: "A new one",
+    author: "A person",
+    url: "https://somestuff/",
+    likes: 1,
   }
 
   await api
@@ -65,20 +65,75 @@ test('post new blog and see if likes are zero', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-    const blogsAtEnd = await helper.blogsInDb()
-    blogsAtEnd.map((blog) => expect(blog.likes).toBeGreaterThanOrEqual(0))
+  const blogsAtEnd = await helper.blogsInDb()
+  blogsAtEnd.map((blog) => expect(blog.likes).toBeGreaterThanOrEqual(0))
 })
 
-test('post new blog without title and url, and expect error', async () => {
-  const newBlog = {
-    author: "A third person" 
+test('invalid users sshould not be accepted', async () => {
+  const newUser1 = {
+    username: "22",
+    name: "Yeah22",
+    password: "1234532"
   }
 
   await api
     .post('/api/blogs')
-    .send(newBlog)
+    .send(newUser1)
     .expect(400)
 
+})
+
+describe('invalid users are not created', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
+
+  test('username exists already', async () => {
+
+    const newUser = {
+      username: "root",
+      password: "12345"
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newUser)
+      .expect(400)
+
+  })
+
+  test('username is too short', async () => {
+
+    const newUser = {
+      username: "ro",
+      password: "12345"
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newUser)
+      .expect(400)
+
+  })
+
+  test('password is too short', async () => {
+
+    const newUser = {
+      username: "roott",
+      password: "12"
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newUser)
+      .expect(400)
+
+  })
 })
 
 afterAll(() => {
