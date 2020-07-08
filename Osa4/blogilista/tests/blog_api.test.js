@@ -39,7 +39,7 @@ test('post new blog and is it there', async () => {
   await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/)
 
   const blogsAtEnd = await helper.blogsInDb()
@@ -60,7 +60,7 @@ test('post new blog and see if likes are zero', async () => {
   await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/)
 
     const blogsAtEnd = await helper.blogsInDb()
