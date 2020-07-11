@@ -46,14 +46,9 @@ test('post new blog with token and is it there', async () => {
     .post('/api/users')
     .send(newUser)
 
-  console.log(newUser.username)
-  console.log(newUser.password)
-
   const response = await api
     .post('/api/login')
     .send({ username:newUser.username, password:newUser.password })
-
-  console.log(response.body.token)
 
   const token = response.body.token
 
@@ -89,14 +84,9 @@ test('post new blog with token and see if likes are zero', async () => {
     .post('/api/users')
     .send(newUser)
 
-  console.log(newUser.username)
-  console.log(newUser.password)
-
   const response = await api
     .post('/api/login')
     .send({ username:newUser.username, password:newUser.password })
-
-  console.log(response.body.token)
 
   const token = response.body.token
 
@@ -127,14 +117,9 @@ test('post new blog with token without title or url', async () => {
     .post('/api/users')
     .send(newUser)
 
-  console.log(newUser.username)
-  console.log(newUser.password)
-
   const response = await api
     .post('/api/login')
     .send({ username:newUser.username, password:newUser.password })
-
-  console.log(response.body.token)
 
   const token = response.body.token
 
