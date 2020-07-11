@@ -117,6 +117,39 @@ test('post new blog with token and see if likes are zero', async () => {
   blogsAtEnd.map((blog) => expect(blog.likes).toBeGreaterThanOrEqual(0))
 })
 
+test('post new blog with token without title or url', async () => {
+  const newUser = {
+    username: "newaccount",
+    password: "newpassword"
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+
+  console.log(newUser.username)
+  console.log(newUser.password)
+
+  const response = await api
+    .post('/api/login')
+    .send({ username:newUser.username, password:newUser.password })
+
+  console.log(response.body.token)
+
+  const token = response.body.token
+
+  const newBlog = {
+    author: "A second person"
+  }
+
+  await api
+    .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
+    .send(newBlog)
+    .expect(400)
+
+})
+
 test('post new blog without token', async () => {
   const newBlog = {
     title: "A new one",
