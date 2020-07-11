@@ -10,12 +10,17 @@ const User = require('../models/user')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  //await User.deleteMany({})
 
   let blogObject = new Blog(helper.initialBlogs[0])
   await blogObject.save()
 
   blogObject = new Blog(helper.initialBlogs[1])
   await blogObject.save()
+
+  //let userObject = new User(helper.initialUsers[0])
+  //await userObject.save()
+
 })
 
 test('blogs are returned as json', async () => {
@@ -30,7 +35,28 @@ test('blogs have an id', async () => {
   response.body.map((blog) => expect(blog.id).toBeDefined())
 })
 
-test('post new blog and is it there', async () => {
+test('post new blog with token and is it there', async () => {
+
+  const newUser = {
+    username: "newaccount",
+    password: "newpassword"
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+
+  console.log(newUser.username)
+  console.log(newUser.password)
+
+  const response = await api
+    .post('/api/login')
+    .send({ username:newUser.username, password:newUser.password })
+
+  console.log(response.body.token)
+
+  const token = response.body.token
+
   const newBlog = {
     title: "A new one",
     author: "A person",
@@ -40,6 +66,7 @@ test('post new blog and is it there', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
     .send(newBlog)
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -52,7 +79,27 @@ test('post new blog and is it there', async () => {
 
 })
 
-test('post new blog and see if likes are zero', async () => {
+test('post new blog with token and see if likes are zero', async () => {
+  const newUser = {
+    username: "newaccount",
+    password: "newpassword"
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+
+  console.log(newUser.username)
+  console.log(newUser.password)
+
+  const response = await api
+    .post('/api/login')
+    .send({ username:newUser.username, password:newUser.password })
+
+  console.log(response.body.token)
+
+  const token = response.body.token
+
   const newBlog = {
     title: "A second one", 
     author: "A second person", 
@@ -61,6 +108,7 @@ test('post new blog and see if likes are zero', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
     .send(newBlog)
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -69,7 +117,22 @@ test('post new blog and see if likes are zero', async () => {
   blogsAtEnd.map((blog) => expect(blog.likes).toBeGreaterThanOrEqual(0))
 })
 
-test('invalid users sshould not be accepted', async () => {
+test('post new blog without token', async () => {
+  const newBlog = {
+    title: "A new one",
+    author: "A person",
+    url: "https://somestuff/",
+    likes: 1,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
+
+})
+
+test('invalid users should not be accepted', async () => {
   const newUser1 = {
     username: "22",
     name: "Yeah22",
@@ -77,7 +140,7 @@ test('invalid users sshould not be accepted', async () => {
   }
 
   await api
-    .post('/api/blogs')
+    .post('/api/users')
     .send(newUser1)
     .expect(400)
 
@@ -101,7 +164,7 @@ describe('invalid users are not created', () => {
     }
 
     await api
-      .post('/api/blogs')
+      .post('/api/users')
       .send(newUser)
       .expect(400)
 
@@ -115,7 +178,7 @@ describe('invalid users are not created', () => {
     }
 
     await api
-      .post('/api/blogs')
+      .post('/api/users')
       .send(newUser)
       .expect(400)
 
@@ -129,9 +192,9 @@ describe('invalid users are not created', () => {
     }
 
     await api
-      .post('/api/blogs')
+      .post('/api/users')
       .send(newUser)
-      .expect(400)
+      .expect(401)
 
   })
 })
