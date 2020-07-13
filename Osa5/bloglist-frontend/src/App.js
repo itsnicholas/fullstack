@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login' 
-import ShowBlogs from './components/ShowBlogs'
+import BlogForm from './components/BlogForm'
 import Blog from './components/Blog'
 import ErrorNotification from './components/ErrorNotification'
 import Notification from './components/Notification'
@@ -13,9 +13,6 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newTitle, setTitle] = useState('') 
-  const [newAuthor, setAuthor] = useState('')
-  const [newUrl, setUrl] = useState('')
   const [blogsVisible, setBlogsVisible] = useState(false)
 
   useEffect(() => {
@@ -55,24 +52,13 @@ const App = () => {
     }
   } 
   
-  const handleNewBlog = async (event) => {
-    event.preventDefault()
-
-    const blogObject = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl
-    }
-
-    await blogService
-    .create(blogObject)
+  const addBlog = (blogObject) => {
+    blogService
+      .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         setBlogsVisible(false)
-        setTitle('')
-        setAuthor('')
-        setUrl('')
-        setMessage(`a new blog '${newTitle}' by '${newAuthor}'`)
+        setMessage(`a new blog '${returnedBlog.title}' by '${returnedBlog.author}'`)
         setTimeout(() => {
           setMessage(null)
         }, 5000)  
@@ -93,6 +79,7 @@ const App = () => {
   }
 
   const NewBlog = () => {
+    
     const hideWhenVisible = { display: blogsVisible ? 'none' : '' }
     const showWhenVisible = { display: blogsVisible ? '' : 'none' }
 
@@ -108,15 +95,7 @@ const App = () => {
           <button onClick={() => setBlogsVisible(true)}>new note</button>
         </div>
         <div style={showWhenVisible}>
-            <ShowBlogs
-            handleSubmit={handleNewBlog}
-            newTitle={newTitle}
-            newAuthor={newAuthor}
-            newUrl={newUrl}
-            error={error}
-            handleTitle={({ target }) => setTitle(target.value)}
-            handleAuthor={({ target }) => setAuthor(target.value)}
-            handleUrl={({ target }) => setUrl(target.value)} />
+            <BlogForm createBlog={addBlog} />
           <button onClick={() => setBlogsVisible(false)}>cancel</button>
         </div>
       </div>
