@@ -3,9 +3,35 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login' 
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="message">
+      {message}
+    </div>
+  )
+}
+
+const ErrorNotification = ({ error }) => {
+  if (error === null) {
+    return null
+  }
+
+  return (
+    <div className="error">
+      {error}
+    </div>
+  )
+}
+
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  //const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
+  const [error, setError] = useState(null)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -43,10 +69,10 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      //setErrorMessage('wrong credentials')
-      //setTimeout(() => {
-      //  setErrorMessage(null)
-      //}, 5000)
+      setError('wrong username or password')
+      setTimeout(() => {
+        setError(null)
+      }, 5000)
     }
   } 
   
@@ -63,16 +89,16 @@ const App = () => {
     .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        //setMessage(`'${newName}' was added`)
-        //setTimeout(() => {
-        //  setMessage(null)
-        //}, 5000)  
+        setMessage(`a new blog '${newTitle}' by '${newAuthor}'`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)  
       })
       .catch(error => {
-        //setError(JSON.stringify(error.response.data.error))
-        //  setTimeout(() => {
-        //    setError(null)
-        //  }, 5000)
+        setError(JSON.stringify(error.response.data.error))
+        setTimeout(() => {
+          setError(null)
+        }, 5000)
         console.log(error)
       })
   } 
@@ -87,6 +113,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <ErrorNotification error={error} />
         <form onSubmit={handleLogin}>
           <div>
             username
@@ -115,6 +142,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={message} />
+      <ErrorNotification error={error} />
       {user.username} logged in <button onClick={handleLogout}>logout</button>
       <br />
       <br />
