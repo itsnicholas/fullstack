@@ -1,32 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login' 
-
-const Notification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
-
-  return (
-    <div className="message">
-      {message}
-    </div>
-  )
-}
-
-const ErrorNotification = ({ error }) => {
-  if (error === null) {
-    return null
-  }
-
-  return (
-    <div className="error">
-      {error}
-    </div>
-  )
-}
-
+import ShowBlogs from './components/ShowBlogs'
+import Blog from './components/Blog'
+import ErrorNotification from './components/ErrorNotification'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -38,6 +16,7 @@ const App = () => {
   const [newTitle, setTitle] = useState('') 
   const [newAuthor, setAuthor] = useState('')
   const [newUrl, setUrl] = useState('')
+  const [blogsVisible, setBlogsVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -89,6 +68,10 @@ const App = () => {
     .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
+        setBlogsVisible(false)
+        setTitle('')
+        setAuthor('')
+        setUrl('')
         setMessage(`a new blog '${newTitle}' by '${newAuthor}'`)
         setTimeout(() => {
           setMessage(null)
@@ -107,6 +90,37 @@ const App = () => {
     event.preventDefault()
     window.localStorage.clear()
     setUser(null)
+  }
+
+  const NewBlog = () => {
+    const hideWhenVisible = { display: blogsVisible ? 'none' : '' }
+    const showWhenVisible = { display: blogsVisible ? '' : 'none' }
+
+    return (
+      <div>
+        <h2>blogs</h2>
+          <Notification message={message} />
+          <ErrorNotification error={error} />
+          {user.username} logged in <button onClick={handleLogout}>logout</button>
+          <br />
+          <br />
+        <div style={hideWhenVisible}>
+          <button onClick={() => setBlogsVisible(true)}>new note</button>
+        </div>
+        <div style={showWhenVisible}>
+            <ShowBlogs
+            handleSubmit={handleNewBlog}
+            newTitle={newTitle}
+            newAuthor={newAuthor}
+            newUrl={newUrl}
+            error={error}
+            handleTitle={({ target }) => setTitle(target.value)}
+            handleAuthor={({ target }) => setAuthor(target.value)}
+            handleUrl={({ target }) => setUrl(target.value)} />
+          <button onClick={() => setBlogsVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
   }
 
   if (user === null) {
@@ -141,43 +155,7 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
-      <Notification message={message} />
-      <ErrorNotification error={error} />
-      {user.username} logged in <button onClick={handleLogout}>logout</button>
-      <br />
-      <br />
-      <h2>create new</h2>
-      <form onSubmit={handleNewBlog}>
-          <div>
-            title:
-              <input
-              type="text"
-              value={newTitle}
-              name="Title"
-              onChange={({ target }) => setTitle(target.value)}
-              />
-          </div>
-          <div>
-            author:
-              <input
-              type="text"
-              value={newAuthor}
-              name="Author"
-              onChange={({ target }) => setAuthor(target.value)}
-              />
-          </div>
-          <div>
-            url:
-              <input
-              type="text"
-              value={newUrl}
-              name="Url"
-              onChange={({ target }) => setUrl(target.value)}
-              />
-          </div>
-          <button type="submit">create</button>
-        </form>
+      {NewBlog()}
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
