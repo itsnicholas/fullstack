@@ -73,7 +73,8 @@ const App = () => {
   } 
 
   const update = (updatedBlogs) => {
-      setBlogs(updatedBlogs)
+    updatedBlogs.sort((a, b) => b.likes - a.likes)
+    setBlogs(updatedBlogs)
   }
   
   const handleLogout = async (event) => {
@@ -139,7 +140,7 @@ const App = () => {
   return (
     <div>
       {NewBlog()}
-      {blogs.map(blog =>
+      {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
         <Blog key={blog.id} blog={blog} update={update}/>
       )}
     </div>
