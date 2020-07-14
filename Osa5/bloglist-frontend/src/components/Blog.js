@@ -1,9 +1,9 @@
 import React, {useState} from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, update }) => {
+const Blog = ({ blog, update, user }) => {
   const [infoVisible, setInfoVisible] = useState(false)
-
+  
   const hideWhenVisible = { display: infoVisible ? 'none' : '' }
   const showWhenVisible = { display: infoVisible ? '' : 'none' }
 
@@ -25,9 +25,19 @@ const Blog = ({ blog, update }) => {
       url: blog.url,
       user: blog.user.id
     }
-    console.log(updateBlog)
+    console.log(blog.user.username)
+    console.log(user.username)
     await blogService.update(blog.id, updateBlog)
     update(await blogService.getAll())
+  }
+
+  const deletePost = async (event) => {
+    if (window.confirm("Remove blog " + blog.title + " by" + blog.author)) {
+      event.preventDefault()
+      console.log(blog.id)
+      await blogService.deleteId(blog.id)
+      update(await blogService.getAll())
+    }
   }
 
   return (
@@ -40,8 +50,8 @@ const Blog = ({ blog, update }) => {
     <br />{blog.url}
     <br />likes {blog.likes} <button onClick={newLike}>like</button>
     <br />{blog.author}
+    <br />{blog.user.username === user.username && <button onClick={deletePost}>remove</button> }
     </div>
-    
   </div>
   )
 }
