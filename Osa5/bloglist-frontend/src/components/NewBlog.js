@@ -4,13 +4,13 @@ import Notification from './Notification'
 import BlogForm from './BlogForm'
 
 
-const NewBlog = ({ message, 
-    error, 
-    user, 
-    handleLogout, 
-    addBlog 
-    }) => {
-  const [blogsVisible, setBlogsVisible] = useState(false)    
+const NewBlog = ({ message,
+  error,
+  user,
+  handleLogout,
+  addBlog
+}) => {
+  const [blogsVisible, setBlogsVisible] = useState(false)
 
   const hideWhenVisible = { display: blogsVisible ? 'none' : '' }
   const showWhenVisible = { display: blogsVisible ? '' : 'none' }
@@ -24,11 +24,11 @@ const NewBlog = ({ message,
       <br />
       <br />
       <div style={hideWhenVisible}>
-      <button onClick={() => setBlogsVisible(true)}>new note</button>
+        <button onClick={() => setBlogsVisible(true)}>new note</button>
       </div>
       <div style={showWhenVisible}>
-      <BlogForm createBlog={addBlog} setBlogsVisible={setBlogsVisible} />
-      <button onClick={() => setBlogsVisible(false)}>cancel</button>
+        <BlogForm createBlog={addBlog} setBlogsVisible={setBlogsVisible} />
+        <button onClick={() => setBlogsVisible(false)}>cancel</button>
       </div>
     </div>
   )

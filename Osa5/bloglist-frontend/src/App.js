@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import blogService from './services/blogs'
-import loginService from './services/login' 
+import loginService from './services/login'
 import NewBlog from './components/NewBlog'
 import Blog from './components/Blog'
 import LogIn from './components/LogIn'
@@ -10,14 +10,14 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [message, setMessage] = useState(null)
   const [error, setError] = useState(null)
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -49,8 +49,8 @@ const App = () => {
         setError(null)
       }, 5000)
     }
-  } 
-  
+  }
+
   const addBlog = (blogObject) => {
     blogService
       .create(blogObject)
@@ -59,7 +59,7 @@ const App = () => {
         setMessage(`a new blog '${returnedBlog.title}' by '${returnedBlog.author}'`)
         setTimeout(() => {
           setMessage(null)
-        }, 5000)  
+        }, 5000)
       })
       .catch(error => {
         setError(JSON.stringify(error.response.data.error))
@@ -68,13 +68,13 @@ const App = () => {
         }, 5000)
         console.log(error)
       })
-  } 
+  }
 
   const update = (updatedBlogs) => {
     updatedBlogs.sort((a, b) => b.likes - a.likes)
     setBlogs(updatedBlogs)
   }
-  
+
   const handleLogout = async (event) => {
     event.preventDefault()
     window.localStorage.clear()
@@ -83,23 +83,23 @@ const App = () => {
 
   if (user === null) {
     return (
-      <LogIn error={error} 
-      handleLogin={handleLogin} 
-      username={username} 
-      handleUsernameChange={({ target }) => setUsername(target.value)} 
-      password={password} 
-      handlePasswordChange={({ target }) => setPassword(target.value)} 
+      <LogIn error={error}
+        handleLogin={handleLogin}
+        username={username}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        password={password}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
       />
     )
   }
 
   return (
     <div>
-      <NewBlog message={message} 
-      error={error} 
-      user={user} 
-      handleLogout={handleLogout} 
-      addBlog={addBlog} />
+      <NewBlog message={message}
+        error={error}
+        user={user}
+        handleLogout={handleLogout}
+        addBlog={addBlog} />
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
         <Blog key={blog.id} blog={blog} update={update} user={user} />
       )}
