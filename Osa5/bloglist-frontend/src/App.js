@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login' 
-import BlogForm from './components/BlogForm'
+import NewBlog from './components/NewBlog'
 import Blog from './components/Blog'
-import ErrorNotification from './components/ErrorNotification'
-import Notification from './components/Notification'
+import LogIn from './components/LogIn'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,7 +13,6 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [blogsVisible, setBlogsVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -57,7 +56,6 @@ const App = () => {
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setBlogsVisible(false)
         setMessage(`a new blog '${returnedBlog.title}' by '${returnedBlog.author}'`)
         setTimeout(() => {
           setMessage(null)
@@ -83,63 +81,25 @@ const App = () => {
     setUser(null)
   }
 
-  const NewBlog = () => {
-    
-    const hideWhenVisible = { display: blogsVisible ? 'none' : '' }
-    const showWhenVisible = { display: blogsVisible ? '' : 'none' }
-
-    return (
-      <div>
-        <h2>blogs</h2>
-          <Notification message={message} />
-          <ErrorNotification error={error} />
-          {user.username} logged in <button onClick={handleLogout}>logout</button>
-          <br />
-          <br />
-        <div style={hideWhenVisible}>
-          <button onClick={() => setBlogsVisible(true)}>new note</button>
-        </div>
-        <div style={showWhenVisible}>
-            <BlogForm createBlog={addBlog} />
-          <button onClick={() => setBlogsVisible(false)}>cancel</button>
-        </div>
-      </div>
-    )
-  }
-
   if (user === null) {
     return (
-      <div>
-        <h2>Log in to application</h2>
-        <ErrorNotification error={error} />
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-              <input
-              type="text"
-              value={username}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-              />
-          </div>
-          <div>
-            password
-              <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-              />
-          </div>
-          <button type="submit">login</button>
-        </form>
-      </div>
+      <LogIn error={error} 
+      handleLogin={handleLogin} 
+      username={username} 
+      handleUsernameChange={({ target }) => setUsername(target.value)} 
+      password={password} 
+      handlePasswordChange={({ target }) => setPassword(target.value)} 
+      />
     )
   }
 
   return (
     <div>
-      {NewBlog()}
+      <NewBlog message={message} 
+      error={error} 
+      user={user} 
+      handleLogout={handleLogout} 
+      addBlog={addBlog} />
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
         <Blog key={blog.id} blog={blog} update={update} user={user} />
       )}
