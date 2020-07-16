@@ -94,7 +94,7 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div className='blog'>
       <NewBlog message={message}
         error={error}
         user={user}

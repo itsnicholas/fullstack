@@ -4,9 +4,6 @@ import blogService from '../services/blogs'
 const Blog = ({ blog, update, user }) => {
   const [infoVisible, setInfoVisible] = useState(false)
 
-  const hideWhenVisible = { display: infoVisible ? 'none' : '' }
-  const showWhenVisible = { display: infoVisible ? '' : 'none' }
-
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -42,16 +39,20 @@ const Blog = ({ blog, update, user }) => {
 
   return (
     <div style={blogStyle}>
-      <div style={hideWhenVisible}>
-        {blog.title} <button onClick={() => setInfoVisible(true)}>view</button>
+      { !infoVisible && (
+      <div className='blog'>
+        {blog.title} {blog.author} <button onClick={() => setInfoVisible(true)}>view </button>
       </div>
-      <div style={showWhenVisible}>
-        {blog.title}  <button onClick={() => setInfoVisible(false)}>hide</button>
-        <br />{blog.url}
-        <br />likes {blog.likes} <button onClick={newLike}>like</button>
-        <br />{blog.author}
-        <br />{blog.user.username === user.username && <button onClick={deletePost}>remove</button> }
+      )}
+      { infoVisible && (
+      <div>
+        {blog.title} {blog.author} <button onClick={() => setInfoVisible(false)}>hide</button>
+        <br /> {blog.url}
+        <br /> likes {blog.likes} <button onClick={newLike}>like</button>
+        <br /> {blog.user.username}
+        <br />{blog.user.username === user.username && <button onClick={deletePost}> remove</button> }
       </div>
+      )}
     </div>
   )
 }
