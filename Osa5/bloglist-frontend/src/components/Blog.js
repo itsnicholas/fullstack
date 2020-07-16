@@ -45,7 +45,7 @@ const Blog = ({ blog, update, user }) => {
       </div>
       )}
       { infoVisible && (
-      <div>
+      <div className='blog'>
         {blog.title} {blog.author} <button onClick={() => setInfoVisible(false)}>hide</button>
         <br /> {blog.url}
         <br /> likes {blog.likes} <button onClick={newLike}>like</button>
