@@ -1,7 +1,12 @@
 import React, {useState} from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, update, user }) => {
+const Blog = ({ 
+  blog,
+  update,
+  user,
+  newLike
+}) => {
   const [infoVisible, setInfoVisible] = useState(false)
 
   const blogStyle = {
@@ -10,22 +15,6 @@ const Blog = ({ blog, update, user }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
-  }
-
-  const newLike = async (event) => {
-    event.preventDefault()
-    const updateBlog = {
-      author: blog.author,
-      id: blog.id,
-      likes: blog.likes + 1,
-      title: blog.title,
-      url: blog.url,
-      user: blog.user.id
-    }
-    console.log(blog.user.username)
-    console.log(user.username)
-    await blogService.update(blog.id, updateBlog)
-    update(await blogService.getAll())
   }
 
   const deletePost = async (event) => {
@@ -40,18 +29,18 @@ const Blog = ({ blog, update, user }) => {
   return (
     <div style={blogStyle}>
       { !infoVisible && (
-      <div className='blog'>
-        {blog.title} {blog.author} <button onClick={() => setInfoVisible(true)}>view </button>
-      </div>
+        <div>
+          {blog.title} {blog.author} <button onClick={() => setInfoVisible(true)}>view </button>
+        </div>
       )}
       { infoVisible && (
-      <div className='blog'>
-        {blog.title} {blog.author} <button onClick={() => setInfoVisible(false)}>hide</button>
-        <br /> {blog.url}
-        <br /> likes {blog.likes} <button onClick={newLike}>like</button>
-        <br /> {blog.user.username}
-        <br />{blog.user.username === user.username && <button onClick={deletePost}> remove</button> }
-      </div>
+        <div>
+          {blog.title} {blog.author} <button onClick={() => setInfoVisible(false)}>hide</button>
+          <br /> {blog.url}
+          <br /> likes {blog.likes} <button onClick={() => newLike(blog)}>like</button>
+          <br /> {blog.user.username}
+          <br />{blog.user.username === user.username && <button onClick={deletePost}> remove</button> }
+        </div>
       )}
     </div>
   )

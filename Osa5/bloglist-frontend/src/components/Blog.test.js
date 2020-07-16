@@ -1,7 +1,6 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import { render, fireEvent } from '@testing-library/react'
-import { prettyDOM } from '@testing-library/dom'
 import Blog from './Blog'
 
 test('renders blog title and author', () => {
@@ -22,17 +21,17 @@ test('renders blog title and author', () => {
 
 })
 
-test('renders all blog indo after button click', async () => {
+test('renders all blog info after button click', async () => {
   const blog = {
     title: 'First title',
     author: 'Matti Meikäläinen',
     url: 'www.www',
     likes: 2,
-    user: {username: 'Matti Meikäläinen'}
+    user: { username: 'Matti Meikäläinen' }
   }
 
   const user = {
-    user: {username: 'Matti Meikäläinen'}
+    user: { username: 'Matti Meikäläinen' }
   }
 
   const mockHandler = jest.fn()
@@ -49,6 +48,32 @@ test('renders all blog indo after button click', async () => {
   )
 })
 
-  //const li = component.container.querySelector('li')
+test('clicking the button twice calls event handler twice', async () => {
+  const blog = {
+    title: 'First title',
+    author: 'Matti Meikäläinen',
+    url: 'www.www',
+    likes: 2,
+    user: {username: 'Matti Meikäläinen'}
+  }
 
-  //console.log(prettyDOM(li))
+  const user = {
+    user: {username: 'Matti Meikäläinen'}
+  }
+
+  const newLike = jest.fn()
+
+  const component = render(
+    <Blog blog={blog} user={user} newLike={newLike} />
+  )
+
+  const button = component.getByText('view')
+  fireEvent.click(button)
+
+  const button2 = component.getByText('like')
+  fireEvent.click(button2)
+  fireEvent.click(button2)
+
+  expect(newLike.mock.calls).toHaveLength(2)
+
+})

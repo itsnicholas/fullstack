@@ -70,6 +70,21 @@ const App = () => {
       })
   }
 
+  const newLike = async (blog) => {
+    const updateBlog = {
+      author: blog.author,
+      id: blog.id,
+      likes: blog.likes + 1,
+      title: blog.title,
+      url: blog.url,
+      user: blog.user.id
+    }
+    console.log(blog.user.username)
+    console.log(user.username)
+    await blogService.update(blog.id, updateBlog)
+    update(await blogService.getAll())
+  }
+
   const update = (updatedBlogs) => {
     updatedBlogs.sort((a, b) => b.likes - a.likes)
     setBlogs(updatedBlogs)
@@ -101,7 +116,7 @@ const App = () => {
         handleLogout={handleLogout}
         addBlog={addBlog} />
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} update={update} user={user} />
+        <Blog key={blog.id} blog={blog} update={update} user={user} newLike={newLike}/>
       )}
     </div>
   )
