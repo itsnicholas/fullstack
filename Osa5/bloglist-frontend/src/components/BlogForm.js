@@ -39,6 +39,7 @@ const BlogForm = ({ createBlog, setBlogsVisible }) => {
           title:
           <input
             type="text"
+            id='title'
             value={newTitle}
             name="Title"
             onChange={handleTitle}
@@ -48,6 +49,7 @@ const BlogForm = ({ createBlog, setBlogsVisible }) => {
           author:
           <input
             type="text"
+            id='author'
             value={newAuthor}
             name="Author"
             onChange={handleAuthor}
@@ -57,6 +59,7 @@ const BlogForm = ({ createBlog, setBlogsVisible }) => {
           url:
           <input
             type="text"
+            id='url'
             value={newUrl}
             name="Url"
             onChange={handleUrl}
