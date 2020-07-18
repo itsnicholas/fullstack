@@ -65,7 +65,7 @@ const BlogForm = ({ createBlog, setBlogsVisible }) => {
             onChange={handleUrl}
           />
         </div>
-        <button type="submit">create</button>
+        <button id='submit' type="submit">create</button>
       </form>
     </div>
   )
