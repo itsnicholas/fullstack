@@ -1,11 +1,11 @@
 describe('Blog app ', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3001/api/testing/reset')
-    //const user = {
-    //  username: 'username',
-    //  password: 'password'
-    //}
-    //cy.request('POST', 'http://localhost:3001/api/users/', user) 
+    const user = {
+      username: 'username',
+      password: 'password'
+    }
+    cy.request('POST', 'http://localhost:3001/api/users/', user) 
     cy.visit('http://localhost:3000')
   })
 
@@ -14,14 +14,24 @@ describe('Blog app ', function() {
     cy.contains('password')
   })
 
-  //it('user can log in', function() {
-  //  cy.contains('login').click()
-  //  cy.get('#username').type('username')
-  //  cy.get('#password').type('password')
-  //  cy.get('#login-button').click()
+  describe('Login',function() {
+    it('succeeds with correct credentials', function() {
+      cy.get('#username').type('username')
+      cy.get('#password').type('password')
+      cy.get('#login-button').click()
 
-  //  cy.contains('username')
-  //})
+      cy.contains('username')
+    })
+
+    it('fails with wrong credentials', function() {
+      cy.contains('logout').click()
+      cy.get('#username').type('123')
+      cy.get('#password').type('123')
+      cy.get('#login-button').click()
+
+      cy.contains('wrong username or password')
+    })
+  })
 
   //describe('when logged in', function() {
   //  beforeEach(function() {
