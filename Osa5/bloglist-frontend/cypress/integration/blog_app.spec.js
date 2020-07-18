@@ -61,5 +61,17 @@ describe('Blog app ', function() {
       cy.contains('like').click()
       cy.contains('1')
     })
+
+    it('A blog can be deleted by user who posted', function() {
+      cy.contains('new blog').click()
+      cy.get('#title').type('First title')
+      cy.get('#author').type('Matti Meikäläinen')
+      cy.get('#url').type('www.www')
+      cy.get('#submit').click()
+      cy.contains('First title Matti Meikäläinen')
+      cy.contains('view').click()
+      cy.contains('remove').click()
+      cy.contains('First title Matti Meikäläinen').should('not.exist')
+    })
   })
 })
