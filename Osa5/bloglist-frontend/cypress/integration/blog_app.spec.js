@@ -33,21 +33,20 @@ describe('Blog app ', function() {
     })
   })
 
-  //describe('when logged in', function() {
-  //  beforeEach(function() {
-  //    cy.contains('login').click()
-  //    cy.get('#username').type('username')
-  //    cy.get('#password').type('password')
-  //    cy.get('#login-button').click()
-  //  })
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.get('#username').type('username')
+      cy.get('#password').type('password')
+      cy.get('#login-button').click()
+    })
 
-  //  it('a new blog can be created', function() {
-  //    cy.contains('new note').click()
-  //    cy.get('#title').type('First title')
-  //    cy.get('#author').type('Matti Meikäläinen')
-  //    cy.get('#url').type('www.www')
-  //    cy.get('#submit').click()
-  //    cy.contains('First title Matti Meikäläinen')
-  //  })
-  //})
+    it('A blog can be created', function() {
+      cy.contains('new blog').click()
+      cy.get('#title').type('First title')
+      cy.get('#author').type('Matti Meikäläinen')
+      cy.get('#url').type('www.www')
+      cy.get('#submit').click()
+      cy.contains('First title Matti Meikäläinen')
+    })
+  })
 })

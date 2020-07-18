@@ -24,7 +24,7 @@ const NewBlog = ({ message,
       <br />
       <br />
       <div style={hideWhenVisible}>
-        <button onClick={() => setBlogsVisible(true)}>new note</button>
+        <button onClick={() => setBlogsVisible(true)}>new blog</button>
       </div>
       <div style={showWhenVisible}>
         <BlogForm createBlog={addBlog} setBlogsVisible={setBlogsVisible} />
