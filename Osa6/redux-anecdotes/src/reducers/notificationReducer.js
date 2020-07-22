@@ -1,6 +1,4 @@
-const notification = 'This is a notification'
-
-const notificationReducer = (state = notification, action) => {
+const notificationReducer = (state = '', action) => {
     switch (action.type) {
         case 'SET_NOTIFICATION':
           return action.notification
@@ -15,5 +13,6 @@ const notificationReducer = (state = notification, action) => {
       notification,
     }
   }
+
   
   export default notificationReducer
