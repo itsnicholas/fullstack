@@ -22,10 +22,7 @@ const AnecdoteList = () => {
     console.log('anecdote update in anecdoteList.js', updateAnecdote)
 
     dispatch(voteAnecdote(updateAnecdote))
-    dispatch(notificationChange('You voted: ' + anecdote.content))
-    setTimeout(() => {
-      dispatch(notificationChange(''))
-    }, 5000)
+    dispatch(notificationChange('You voted: ' + anecdote.content, 5))
   }
     
     return (
