@@ -14,8 +14,14 @@ const AnecdoteList = () => {
   const dispatch = useDispatch()
 
   const vote = (anecdote) => {
-    console.log('vote', anecdote.id)
-    dispatch(voteAnecdote(anecdote.id))
+    const updateAnecdote = {
+      content: anecdote.content,
+      id: anecdote.id,
+      votes: anecdote.votes + 1
+    }
+    console.log('anecdote update in anecdoteList.js', updateAnecdote)
+
+    dispatch(voteAnecdote(updateAnecdote))
     dispatch(notificationChange('You voted: ' + anecdote.content))
     setTimeout(() => {
       dispatch(notificationChange(''))
