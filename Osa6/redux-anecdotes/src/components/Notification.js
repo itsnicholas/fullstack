@@ -14,12 +14,12 @@ const Notification = (props) => {
         {props.notification}
       </div>
     )
-    } else {
-      return (
-        <div>
-        </div>
-      )
-    }
+  } else {
+    return (
+      <div>
+      </div>
+    )
+  }
 }
 
 const mapStateToProps = (state) => {
