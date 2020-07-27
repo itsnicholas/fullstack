@@ -5,7 +5,8 @@ import {
   Switch, 
   Route, 
   Link, 
-  useParams
+  useParams,
+  useHistory
 } from "react-router-dom"
 
 const AnecdoteList = ({ anecdotes }) => (
@@ -47,10 +48,23 @@ const Anecdote = ({anecdotes}) => {
   )
 }
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div>
+      {message}
+    </div>
+  )
+}
+
 const CreateNew = (props) => {
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
+  const history = useHistory()
 
 
   const handleSubmit = (e) => {
@@ -61,6 +75,7 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    history.push('/')
   }
 
   return (
@@ -113,6 +128,10 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
     setAnecdotes(anecdotes.concat(anecdote))
+    setNotification(`a new anecdote ${anecdote.content} created!`)
+      setTimeout(() => {
+        setNotification(null)
+      }, 10000)
   }
 
   const anecdoteById = (id) =>
@@ -138,6 +157,7 @@ const App = () => {
         <Link style={padding} to="/create">create new</Link>
         <Link style={padding} to="/about">about</Link>
       </div>
+      {notification}
 
       <Switch>
         <Route path="/anecdotes/:id">
