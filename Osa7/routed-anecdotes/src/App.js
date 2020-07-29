@@ -76,20 +76,20 @@ const CreateNew = (props) => {
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form>
         <div>
           content
-          <input  {...content} /> 
+          <input  {...content} reset="reset" /> 
         </div>
         <div>
           author
-          <input  {...author} /> 
+          <input  {...author} reset="reset" /> 
         </div>
         <div>
           url for more info
-          <input  {...info} />
+          <input  {...info} reset="reset" />
         </div>
-        <button>create</button></form><button onClick={resetAll}>reset</button>
+        <button onClick={handleSubmit}>create</button><button onClick={resetAll}>reset</button></form>
     </div>
   )
 
