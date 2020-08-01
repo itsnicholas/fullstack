@@ -1,20 +1,28 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useDispatch } from 'react-redux'
+import { newcreateBlog } from '../reducers/blogReducer'
 
-const NewBlog = (props) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+const NewBlog = () => {
+  const dispatch = useDispatch()
 
   const handleNewBlog = (event) => {
     event.preventDefault()
 
-    props.createBlog({
-      title, author, url
-    })
+    const generateId = () =>
+      Number((Math.random() * 1000000).toFixed(0))
 
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    const content = {
+      author: event.target.author.value,
+      title: event.target.title.value,
+      url: event.target.url.value,
+      likes: 0,
+      id: generateId()
+    }
+
+    event.target.author.value = ''
+    event.target.title.value = ''
+    event.target.url.value = ''
+    dispatch(newcreateBlog(content))
   }
 
   return (
@@ -23,29 +31,17 @@ const NewBlog = (props) => {
       <form onSubmit={handleNewBlog}>
         <div>
           author
-          <input
-            id='author'
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
+          <input id='author' name="author" />
         </div>
         <div>
           title
-          <input
-            id='title'
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
+          <input id='title' name="title" />
         </div>
         <div>
           url
-          <input
-            id='url'
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
-          />
+          <input id='url' name="url" />
         </div>
-        <button id="create">create</button>
+        <button id="create" type="submit">create</button>
       </form>
     </div>
   )
