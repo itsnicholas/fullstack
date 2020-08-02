@@ -1,21 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import NewBlog from './components/NewBlog'
-import { noNotification, notificationChange } from './reducers/notificationReducer'
-import { initializeBlogs  } from './reducers/blogReducer'
+import { notificationChange, loginNotificationChange } from './reducers/notificationReducer'
+import { initializeBlogs } from './reducers/blogReducer'
+import { logInUser, initializeUser, logOutUser } from './reducers/userReducer'
 import { useSelector, useDispatch } from 'react-redux'
 
-import blogService from './services/blogs'
-import loginService from './services/login'
-import storage from './utils/storage'
-
 const App = () => {
-  const [user, setUser] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
   const blogFormRef = React.createRef()
 
   const dispatch = useDispatch()
@@ -25,72 +18,21 @@ const App = () => {
   },[dispatch])
 
   useEffect(() => {
-    const user = storage.loadUser()
-    setUser(user)
-  }, [])
+    dispatch(initializeUser())
+  },[dispatch])
 
-  const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blogs)
-
-  console.log(blogs, 'blogs in App.js')
-
-  const notifyWith = (message, type='success') => {
-    console.log(message, 'app message')
-    console.log(type, 'app type')
-    dispatch(notificationChange(message, type))
-    setTimeout(() => {
-      dispatch(noNotification())
-    }, 5000)
-  }
+  const user = useSelector(state => state.user)
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    try {
-      const user = await loginService.login({
-        username, password
-      })
-
-      setUsername('')
-      setPassword('')
-      setUser(user)
-      notifyWith(`${user.name} welcome back!`)
-      storage.saveUser(user)
-    } catch(exception) {
-      console.log('are we here?')
-      notifyWith('wrong username/password', 'error')
-    }
-  }
-
-  //const createBlog = async (blog) => {
-  //  try {
-  //    const newBlog = await blogService.create(blog)
-  //    blogFormRef.current.toggleVisibility()
-  //    dispatch(newcreateBlog(newBlog))
-  //    notifyWith(`a new blog '${newBlog.title}' by ${newBlog.author} added!`)
-  //  } catch(exception) {
-  //    console.log(exception)
-  //  }
-  //}
-
-  const handleLike = async (id) => {
-    const blogToLike = blogs.find(b => b.id === id)
-    const likedBlog = { ...blogToLike, likes: blogToLike.likes + 1, user: blogToLike.user.id }
-    await blogService.update(likedBlog)
-    //setBlogs(blogs.map(b => b.id === id ?  { ...blogToLike, likes: blogToLike.likes + 1 } : b))
-  }
-
-  const handleRemove = async (id) => {
-    const blogToRemove = blogs.find(b => b.id === id)
-    const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
-    if (ok) {
-      await blogService.remove(id)
-      //setBlogs(blogs.filter(b => b.id !== id))
-    }
+    dispatch(logInUser(event.target.username.value, event.target.password.value, notificationChange, loginNotificationChange))
+    //event.target.username.value = ''
+    //event.target.password.value = ''
   }
 
   const handleLogout = () => {
-    setUser(null)
-    storage.logoutUser()
+    dispatch(logOutUser())
   }
 
   if ( !user ) {
@@ -98,24 +40,16 @@ const App = () => {
       <div>
         <h2>login to application</h2>
 
-        <Notification notification={notification} />
+        <Notification />
 
         <form onSubmit={handleLogin}>
           <div>
             username
-            <input
-              id='username'
-              value={username}
-              onChange={({ target }) => setUsername(target.value)}
-            />
+            <input id='username' name="username" />
           </div>
           <div>
             password
-            <input
-              id='password'
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-            />
+            <input id='password' name="password" />
           </div>
           <button id='login'>login</button>
         </form>
@@ -129,7 +63,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
 
-      <Notification notification={notification} />
+      <Notification />
 
       <p>
         {user.name} logged in <button onClick={handleLogout}>logout</button>
@@ -143,8 +77,6 @@ const App = () => {
         <Blog
           key={blog.id}
           blog={blog}
-          handleLike={handleLike}
-          handleRemove={handleRemove}
           own={user.username===blog.user.username}
         />
       )}

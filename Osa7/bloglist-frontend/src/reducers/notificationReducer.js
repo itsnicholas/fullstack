@@ -1,30 +1,46 @@
-const notificationReducer = (state = null, action) => {
+const notificationReducer = (state = '', action) => {
   switch (action.type) {
   case 'NOTIFICATION':
     console.log(action.data, 'notificationReducer action.data')
-    console.log(action.data.type, 'notificationReducer action.data.type')
-    console.log(action.data.message, 'notificationReducer action.data.message')
-    return action.data
-  case 'NO_NOTIFICATION':
     return action.data
   default:
     return state
   }
 }
 
-export const notificationChange = (message, type) => {
-  console.log(message, 'notificationChange message')
-  console.log(type, 'notificationChange message')
-  return {
-    type: 'NOTIFICATION',
-    data: { message, type }
+var myVar
+
+export const notificationChange = (notification) => {
+  console.log(notification, 'notificationChange notificationReducer.js')
+  clearTimeout(myVar)
+  return async dispatch => {
+    dispatch({
+      type: 'NOTIFICATION',
+      data: notification
+    })
+    myVar = setTimeout(() => {
+      dispatch({
+        type: 'NOTIFICATION',
+        data: ''
+      })
+    }, 5000)
   }
 }
 
-export const noNotification = () => {
-  return {
-    type: 'NO_NOTIFICATION',
-    data: null
+export const loginNotificationChange = (user) => {
+  console.log(user, 'user in notificationReducer.js')
+  clearTimeout(myVar)
+  return async dispatch => {
+    dispatch({
+      type: 'NOTIFICATION',
+      data: `${user.username} welcome back!`
+    })
+    myVar = setTimeout(() => {
+      dispatch({
+        type: 'NOTIFICATION',
+        data: ''
+      })
+    }, 5000)
   }
 }
 

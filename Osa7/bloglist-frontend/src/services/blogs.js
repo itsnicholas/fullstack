@@ -1,7 +1,7 @@
 import axios from 'axios'
 import storage from '../utils/storage'
 
-const baseUrl = '/api/blogs'
+const baseUrl = 'http://localhost:3001/api/blogs'
 
 const getConfig = () => {
   return {
@@ -19,12 +19,14 @@ const create = (blog) => {
   return request.then(response => response.data)
 }
 
-const update = (blog) => {
-  const request = axios.put(`${baseUrl}/${blog.id}`, blog, getConfig())
+const update = (id, blog) => {
+  console.log(blog, 'blog in blogs.js')
+  const request = axios.put(`${baseUrl}/${id}`, blog, getConfig())
   return request.then(response => response.data)
 }
 
 const remove = (id) => {
+  console.log(id, 'id in blogs.js')
   const request = axios.delete(`${baseUrl}/${id}`, getConfig())
   return request.then(response => response.data)
 }

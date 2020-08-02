@@ -1,6 +1,7 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { newcreateBlog } from '../reducers/blogReducer'
+import { notificationChange } from '../reducers/notificationReducer'
 
 const NewBlog = () => {
   const dispatch = useDispatch()
@@ -8,21 +9,17 @@ const NewBlog = () => {
   const handleNewBlog = (event) => {
     event.preventDefault()
 
-    const generateId = () =>
-      Number((Math.random() * 1000000).toFixed(0))
-
     const content = {
-      author: event.target.author.value,
       title: event.target.title.value,
-      url: event.target.url.value,
-      likes: 0,
-      id: generateId()
+      author: event.target.author.value,
+      url: event.target.url.value
     }
 
     event.target.author.value = ''
     event.target.title.value = ''
     event.target.url.value = ''
     dispatch(newcreateBlog(content))
+    dispatch(notificationChange(`a new blog '${content.title}' by ${content.author} added!`))
   }
 
   return (
