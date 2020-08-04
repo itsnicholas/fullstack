@@ -4,8 +4,10 @@ import storage from '../utils/storage'
 const userReducer = (state = null, action) => {
   switch(action.type) {
     case 'LOG_IN':
+      console.log(action.data, 'action.data in LOG_IN in userReducer.js')
       return action.data
     case 'INIT_USER':
+      console.log(action.data, 'action.data in INIT_USER in userReducer.js')
       return action.data
     case 'LOG_OUT':
       return action.data
@@ -20,6 +22,7 @@ export const logInUser = (username, password, notificationChange, loginNotificat
       const user = await loginService.login({ username, password })
       storage.saveUser(user)
       dispatch(loginNotificationChange(user))
+      console.log(user, 'user in logInUser in userReducer.js')
       dispatch({
         type: 'LOG_IN',
         data: user,

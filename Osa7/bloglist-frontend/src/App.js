@@ -26,9 +26,12 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    dispatch(logInUser(event.target.username.value, event.target.password.value, notificationChange, loginNotificationChange))
-    //event.target.username.value = ''
-    //event.target.password.value = ''
+    dispatch(logInUser(
+      event.target.username.value, 
+      event.target.password.value, 
+      notificationChange, 
+      loginNotificationChange
+    ))
   }
 
   const handleLogout = () => {
@@ -66,11 +69,11 @@ const App = () => {
       <Notification />
 
       <p>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
+        {user.username} logged in <button onClick={handleLogout}>logout</button>
       </p>
 
       <Togglable buttonLabel='create new blog'  ref={blogFormRef}>
-        <NewBlog />
+        <NewBlog user={user}/>
       </Togglable>
 
       {blogs.sort(byLikes).map(blog =>

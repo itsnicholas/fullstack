@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux'
 import { newcreateBlog } from '../reducers/blogReducer'
 import { notificationChange } from '../reducers/notificationReducer'
 
-const NewBlog = () => {
+const NewBlog = ({ user }) => {
+  console.log(user, 'user in NewBlog.js')
   const dispatch = useDispatch()
 
   const handleNewBlog = (event) => {

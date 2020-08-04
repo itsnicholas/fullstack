@@ -9,7 +9,7 @@ const blogReducer = (state = [], action) => {
     case 'NEW_LIKE':
       console.log(action.data.id, 'what is action.data.updateBlog.id in blogReducer.js')
       return state.map(b =>
-        b.id !== action.data.updateBlog.id ? b : action.data.updateBlog
+        b.id !== action.data.id ? b : action.data
         )
     case 'REMOVE_BLOG':
       console.log(action.data.id, 'what is action.data.blogToRemove.id in blogReducer.js')
@@ -30,14 +30,17 @@ export const newcreateBlog = (content) => {
   }
 }
 
-export const likeBlog = (blog, initializeUser) => {
+export const likeBlog = (blog) => {
+  const updateBlog = {
+    ...blog, likes: blog.likes + 1, user: blog.user.id
+  }
   return async dispatch => {
     console.log('blog in blogReducer.js:', blog)
-    const updateBlog = await blogService.update(blog.id, blog)
+    await blogService.update(updateBlog)
     console.log('updateBlog in blogReducer.js:', updateBlog)
     dispatch({
       type: 'NEW_LIKE',
-      data: { updateBlog }
+      data: blog
     })
   }
 }

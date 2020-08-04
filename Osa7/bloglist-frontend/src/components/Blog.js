@@ -8,6 +8,7 @@ const Blog = ({ blog, own }) => {
 
   const dispatch = useDispatch()
 
+  console.log(blog.user.id, 'blog.user.id in Blog.js')
   console.log(own, 'own in Blog.js')
 
   const blogStyle = {
@@ -20,10 +21,11 @@ const Blog = ({ blog, own }) => {
 
   const handleLike = (blog) => {
     const updateBlog = { 
-      ...blog, likes: blog.likes + 1, user: blog.user.id
+      ...blog, likes: blog.likes + 1
     }
     console.log('blog update in Blog.js', updateBlog)
     dispatch(likeBlog(updateBlog))
+
   }
 
   const handleRemove = (blog) => {
@@ -46,7 +48,7 @@ const Blog = ({ blog, own }) => {
           <div>likes {blog.likes}
             <button onClick={() => handleLike(blog)}>like</button>
           </div>
-          <div>{blog.user.name}</div>
+          <div>{blog.user.username}</div>
           {own&&<button onClick={() => handleRemove(blog)}>remove</button>}
         </div>
       )}
