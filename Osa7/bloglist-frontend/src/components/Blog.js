@@ -1,23 +1,15 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import { likeBlog, removeBlog } from '../reducers/blogReducer'
+import React from 'react'
 import { useDispatch } from 'react-redux'
+import { likeBlog } from '../reducers/blogReducer'
+import {
+  useParams
+} from "react-router-dom"
 
-const Blog = ({ blog, own }) => {
-  const [visible, setVisible] = useState(false)
+const Blog = ({ blogs }) => {
+  const id = useParams().id
+  const blog = blogs.find(n => n.id === String(id))
 
   const dispatch = useDispatch()
-
-  console.log(blog.user.id, 'blog.user.id in Blog.js')
-  console.log(own, 'own in Blog.js')
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
 
   const handleLike = (blog) => {
     const updateBlog = { 
@@ -28,41 +20,20 @@ const Blog = ({ blog, own }) => {
 
   }
 
-  const handleRemove = (blog) => {
-    const ok = window.confirm(`Remove blog ${blog.title} by ${blog.author}`)
-    if (ok) {
-      dispatch(removeBlog(blog.id))
-    }
+  if (!blog) {
+    return null
   }
 
-  const label = visible ? 'hide' : 'view'
-
   return (
-    <div style={blogStyle} className='blog'>
-      <div>
-        <i>{blog.title}</i> by {blog.author} <button onClick={() => setVisible(!visible)}>{label}</button>
+    <div>
+      <h2>{blog.title} {blog.author}</h2>
+      <div><a href={'https://' + blog.url}>{blog.url}</a></div>
+      <div>likes {blog.likes}
+        <button onClick={() => handleLike(blog)}>like</button>
       </div>
-      {visible&&(
-        <div>
-          <div>{blog.url}</div>
-          <div>likes {blog.likes}
-            <button onClick={() => handleLike(blog)}>like</button>
-          </div>
-          <div>{blog.user.username}</div>
-          {own&&<button onClick={() => handleRemove(blog)}>remove</button>}
-        </div>
-      )}
+      added by {blog.user.username}
     </div>
   )
-}
-
-Blog.propTypes = {
-  blog: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    author: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
-  }).isRequired,
-  own: PropTypes.bool.isRequired
 }
 
 export default Blog

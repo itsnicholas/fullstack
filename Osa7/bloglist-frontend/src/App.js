@@ -76,7 +76,18 @@ const Users = ({ users }) => {
  
 const Blogs = ({ blogs, blogFormRef, user }) => {
   const byLikes = (b1, b2) => b2.likes - b1.likes
+  const sortedblogs = blogs.sort(byLikes)
+  console.log(sortedblogs, 'sortedblogs in App.js')
  
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5
+  }
+
+
   if ( user ) {
     return (
       <div>
@@ -84,12 +95,10 @@ const Blogs = ({ blogs, blogFormRef, user }) => {
           <NewBlog user={user}/>
         </Togglable>
  
-        {blogs.sort(byLikes).map(blog =>
-          <Blog
-            key={blog.id}
-            blog={blog}
-            own={user.username===blog.user.username}
-          />
+        {sortedblogs.map(blog =>
+          <ul key={blog.id} style={blogStyle} className='blog'>
+            <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
+          </ul>
         )}
       </div>
     )
@@ -192,6 +201,9 @@ const App = () => {
         blogs={blogs} 
       />
       <Switch>
+        <Route path="/blogs/:id">
+          <Blog blogs={blogs} />
+        </Route>
         <Route path="/users/:id">
           <UserInfo wantedUser={wantedUser} />
         </Route>
