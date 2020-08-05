@@ -57,9 +57,9 @@ const User = ({ user }) => {
  
 const Users = ({ users }) => {
   console.log(users, 'users in Users App.js')
- 
+
   const byBlogs = (u1, u2) => u2.blogs.length - u1.blogs.length
- 
+
   return (
     <div>
       <h2>Users</h2>
@@ -73,7 +73,7 @@ const Users = ({ users }) => {
     </div>
   )
 }
- 
+
 const Blogs = ({ blogs, blogFormRef, user }) => {
   const byLikes = (b1, b2) => b2.likes - b1.likes
   const sortedblogs = blogs.sort(byLikes)
@@ -94,7 +94,7 @@ const Blogs = ({ blogs, blogFormRef, user }) => {
         <Togglable buttonLabel='create new blog'  ref={blogFormRef}>
           <NewBlog user={user}/>
         </Togglable>
- 
+
         {sortedblogs.map(blog =>
           <ul key={blog.id} style={blogStyle} className='blog'>
             <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
@@ -112,6 +112,11 @@ const Home = ({
   handleLogin,
   handleLogout
 }) => {
+
+  const padding = {
+    paddingRight: 5
+  }
+
   if ( !user ) {
     return (
       <div>
@@ -136,13 +141,15 @@ const Home = ({
  
   return (
     <div>
-      <h2>blogs</h2>
- 
-      <Notification />
- 
-      <p>
+      <div>
+        <Link style={padding} to="/">blogs</Link>
+        <Link style={padding} to="/users">users</Link>
         {user.username} logged in <button onClick={handleLogout}>logout</button>
-      </p>
+      </div>
+      <h2>blog app</h2>
+
+      <Notification />
+
     </div>
   )
 }
