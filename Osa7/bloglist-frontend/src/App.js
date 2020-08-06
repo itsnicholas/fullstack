@@ -97,7 +97,7 @@ const Blogs = ({ blogs, blogFormRef, user }) => {
 
         {sortedblogs.map(blog =>
           <ul key={blog.id} style={blogStyle} className='blog'>
-            <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
+            <Link key={blog.id} to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
           </ul>
         )}
       </div>

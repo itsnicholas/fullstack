@@ -1,4 +1,5 @@
 import React from 'react'
+import Comment from './Comment'
 import { useDispatch } from 'react-redux'
 import { likeBlog } from '../reducers/blogReducer'
 import {
@@ -32,6 +33,12 @@ const Blog = ({ blogs }) => {
         <button onClick={() => handleLike(blog)}>like</button>
       </div>
       added by {blog.user.username}
+      <h4>comments</h4>
+      <ul>
+        {blog.comments.map(comment =>
+          <Comment key={comment.id} comment={comment} />
+        )}
+      </ul>
     </div>
   )
 }
