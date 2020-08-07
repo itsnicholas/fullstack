@@ -7,7 +7,7 @@ import {
   useParams
 } from "react-router-dom"
 
-const Blog = ({ blogs }) => {
+const Blog = ({ user, blogs }) => {
   const id = useParams().id
   const blog = blogs.find(n => n.id === String(id))
   const dispatch = useDispatch()
@@ -38,7 +38,7 @@ const Blog = ({ blogs }) => {
     setComment('')
   }
 
-  if (!blog) {
+  if (!blog || !user) {
     return null
   }
 
