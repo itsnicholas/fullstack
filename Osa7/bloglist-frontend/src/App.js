@@ -141,7 +141,7 @@ const Home = ({
  
   return (
     <div>
-      <div>
+      <div class="links">
         <Link style={padding} to="/">blogs</Link>
         <Link style={padding} to="/users">users</Link>
         {user.username} logged in <button onClick={handleLogout}>logout</button>

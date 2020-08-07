@@ -10,7 +10,7 @@ const Comment = ({ comment }) => {
   return (
     <div>
       <li className='comment'>
-        {comment.content}
+        {comment}
       </li>
     </div>
   )

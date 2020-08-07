@@ -32,7 +32,7 @@ export const newcreateBlog = (content) => {
 
 export const likeBlog = (blog) => {
   const updateBlog = {
-    ...blog, likes: blog.likes + 1, user: blog.user.id
+    ...blog, user: blog.user.id
   }
   return async dispatch => {
     console.log('blog in blogReducer.js:', blog)
