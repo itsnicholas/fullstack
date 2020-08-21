@@ -3,6 +3,10 @@ const { ApolloServer, UserInputError, gql } = require('apollo-server')
 const mongoose = require('mongoose')
 const Book = require('./models/book')
 const Author = require('./models/author')
+const User = require('./models/user')
+const jwt = require('jsonwebtoken')
+
+const JWT_SECRET = 'NEED_HERE_A_SECRET_KEY'
 
 mongoose.set('useFindAndModify', false)
 
@@ -27,6 +31,16 @@ const typeDefs = gql`
     genres: [String]!
   }
 
+  type User {
+    username: String!
+    favoriteGenre: String!
+    id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
   type Author {
     name: String!
     id: ID!
@@ -45,6 +59,14 @@ const typeDefs = gql`
       name: String!
       setBornTo: Int!
     ): Author
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+    login(
+      username: String!
+      password: String!
+    ): Token
   }
 
   type Query {
@@ -52,6 +74,7 @@ const typeDefs = gql`
     authorCount: Int!
     allBooks(author: String, genre: String): [Book]!
     allAuthors: [Author!]!
+    me: User
   }
 `
 
@@ -74,6 +97,9 @@ const resolvers = {
       } else {
         return null
       }
+    },
+    me: (root, args, context) => {
+      return context.currentUser
     }
   },
   Author: {
@@ -84,8 +110,15 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      const currentUser = context.currentUser
+
+      if (!currentUser) {
+        throw new AuthenticationError("not authenticated")
+      }
+
       const authors = await Author.find({})
+
       if (authors.filter(a => a.name === args.author).length === 1) {
         const author = await Author.findOne({ name: args.author })
         console.log('author already', author)
@@ -95,49 +128,104 @@ const resolvers = {
           published: args.published,
           genres: args.genres
         })
-        const logBook = await book.save()
-        console.log('now we have a new book when author is known', logBook)
-        return logBook
+        try {
+          await book.save()
+        } catch (error) {
+          console.log('error in await book.save()', error)
+          throw new UserInputError(error.message, {
+            invalidArgs: args,
+          })
+        }
+        console.log('now we have a new book when author is known', book)
+        return book
       } else {
         console.log('no author yet')
         const newAuthor = new Author({ 
           name: args.author, 
           born: null, 
-          bookCount: 1 
+          bookCount: 1
         })
-        const logAuthor = await newAuthor.save()
-        console.log('now we have an author', logAuthor)
+        try {
+          await newAuthor.save()
+        } catch (error) {
+          console.log('error in const await newAuthor.save() when author was unknown', error)
+          throw new UserInputError(error.message, {
+            invalidArgs: args,
+          })
+        }
+        console.log('now we have an author', newAuthor)
         const book = new Book({ 
           title: args.title,
-          author: logAuthor,
+          author: newAuthor,
           published: args.published,
           genres: args.genres
         })
-        const logBookNewAthor = await book.save()
-        console.log('now we have a new book when author was unknown', logBookNewAthor)
-        return logBookNewAthor
+        try {
+          await book.save()
+        } catch (error) {
+          console.log('error in const await book.save() when author was unknown', error)
+          throw new UserInputError(error.message, {
+            invalidArgs: args,
+          })
+        }
+        console.log('now we have a new book when author was unknown', book)
+        return book
       }
     },
-    editAuthor: async (root, args) => {
-      //console.log('args in editAuthor', args.name)
-      //const author =  await Author.findOne()
-      //console.log('possible author in editAuthor', author)
-      //if (!author) {
-      //  return null
-      //}
-      //console.log('args.setBornTo in editAuthor', args.setBornTo)
-      //const updateAuthor = { ...author, born: args.setBornTo }
-      //console.log('possible updateAuthor in editAuthor', updateAuthor)
-      const updatedAuthor = await Author.findOneAndUpdate({ name: args.name }, { born: args.setBornTo })
-      //console.log('possible updatedAuthor in editAuthor', updatedAuthor)
+    editAuthor: async (root, args, context) => {
+      const currentUser = context.currentUser
+
+      if (!currentUser) {
+        throw new AuthenticationError("not authenticated")
+      }
+
+      const updatedAuthor = await Author.findOneAndUpdate(
+        { name: args.name }, 
+        { born: args.setBornTo })
+        .catch(err => console.error(`Failed to find and update document: ${err}`))
       return updatedAuthor
-    } 
+    },
+    createUser: (root, args) => {
+      const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
+  
+      return user.save()
+        .catch(error => {
+          throw new UserInputError(error.message, {
+            invalidArgs: args,
+        })
+      })
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username })
+  
+      if ( !user || args.password !== 'secret' ) {
+        throw new UserInputError("wrong credentials")
+      }
+  
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      }
+  
+      return { value: jwt.sign(userForToken, JWT_SECRET) }
+    }
   }
 }
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ req }) => {
+    const auth = req ? req.headers.authorization : null
+    if (auth && auth.toLowerCase().startsWith('bearer ')) {
+      const decodedToken = jwt.verify(
+        auth.substring(7), JWT_SECRET
+      )
+      const currentUser = await User
+        .findById(decodedToken.id).populate('friends')
+      return { currentUser }
+    }
+  }
 })
 
 server.listen().then(({ url }) => {
