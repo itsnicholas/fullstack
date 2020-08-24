@@ -72,6 +72,7 @@ const typeDefs = gql`
   type Query {
     bookCount: Int!
     authorCount: Int!
+    allGenres: [String]!
     allBooks(author: String, genre: String): [Book]!
     allAuthors: [Author!]!
     me: User
@@ -82,9 +83,15 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allAuthors: async () => {
-      const authors = await Author.find({})
-      return authors
+    allGenres: async () => {
+      const books = await Book.find({})
+      console.log('books in allGenres', books)
+      const booksGenres = books.map((book) => book.genres)
+      .reduce((pre, cur) => pre.concat(cur))
+      console.log('booksGenres in allGenres', booksGenres)
+      const genres = [...new Set(booksGenres)]
+      console.log('genres in allGenres', genres)
+      return genres
     },
     allBooks: async (root, args) => {
       const books = await Book.find({}).populate('author') 
@@ -97,6 +104,10 @@ const resolvers = {
       } else {
         return null
       }
+    },
+    allAuthors: async () => {
+      const authors = await Author.find({})
+      return authors
     },
     me: (root, args, context) => {
       return context.currentUser
