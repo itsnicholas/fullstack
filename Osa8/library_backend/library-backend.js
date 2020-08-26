@@ -1,5 +1,7 @@
 const config = require('./utils/config')
 const { ApolloServer, UserInputError, gql } = require('apollo-server')
+const { PubSub } = require('apollo-server')
+const pubsub = new PubSub()
 const mongoose = require('mongoose')
 const Book = require('./models/book')
 const Author = require('./models/author')
@@ -77,6 +79,10 @@ const typeDefs = gql`
     allAuthors: [Author!]!
     me: User
   }
+
+  type Subscription {
+    bookAdded: Book!
+  }    
 `
 
 const resolvers = {
@@ -148,6 +154,9 @@ const resolvers = {
           })
         }
         console.log('now we have a new book when author is known', book)
+        
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
+
         return book
       } else {
         console.log('no author yet')
@@ -180,6 +189,9 @@ const resolvers = {
           })
         }
         console.log('now we have a new book when author was unknown', book)
+
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
+
         return book
       }
     },
@@ -220,6 +232,11 @@ const resolvers = {
   
       return { value: jwt.sign(userForToken, JWT_SECRET) }
     }
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
+    }
   }
 }
 
@@ -239,6 +256,7 @@ const server = new ApolloServer({
   }
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })
