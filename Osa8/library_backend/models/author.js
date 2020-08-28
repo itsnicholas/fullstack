@@ -8,8 +8,11 @@ const schema = new mongoose.Schema({
     minlength: 4
   },
   born: {
-    type: Number,
+    type: Number
   },
+  bookCount: {
+    type: Number
+  }
 })
 
 module.exports = mongoose.model('Author', schema)

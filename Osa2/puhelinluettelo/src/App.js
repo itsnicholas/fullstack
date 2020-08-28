@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import personService from './services/persons'
+import personService from './services/people'
 
 const Filter  = (props) => {
     return (
@@ -71,19 +71,18 @@ const ErrorNotification = ({ error }) => {
 }
 
 const App = () => {
-  const [ persons, setPersons] = useState([]) 
+  const [ people, setPeople] = useState([]) 
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newSearch, setNewSearch ] = useState('')
   const [ message, setMessage ] = useState(null)
   const [ error, setError ] = useState(null)
 
-
   useEffect(() => {
     personService
       .getAll()
-      .then(initialPersons => {
-        setPersons(initialPersons)
+      .then(initialPeople => {
+        setPeople(initialPeople)
       })
   }, [])
 
@@ -104,41 +103,51 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
-    if (persons.find(person => person.name === newName)) {
+
+    if (people.find(person => person.name === newName)) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        const personId = persons.find(person => person.name === newName).id
+        const personId = people.find(person => person.name === newName).id
+        
         const nameObject = {
           name: newName,
           number: newNumber
         }
+
         personService
         .update(personId, nameObject)
         .then(returnedPerson => {
-          setPersons(persons.map(person => person.id !== personId ? person : returnedPerson))
+          setPeople(people.map(person => person.id !== personId ? person : returnedPerson))
           setMessage(`'${newName}' was updated`)
           setTimeout(() => {
             setMessage(null)
           }, 5000)
         })
         .catch(error => {
-          console.log(error)
+          console.log(error)  
         })
       }
+
     } else {
+
       const nameObject = {
         name: newName,
         number: newNumber
       }
+
       personService
       .create(nameObject)
       .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
+        setPeople(people.concat(returnedPerson))
         setMessage(`'${newName}' was added`)
         setTimeout(() => {
           setMessage(null)
         }, 5000)  
       })
       .catch(error => {
+        setError(JSON.stringify(error.response.data.error))
+          setTimeout(() => {
+            setError(null)
+          }, 5000)
         console.log(error)
       })
     }
@@ -150,20 +159,22 @@ const App = () => {
     if (window.confirm("Delete " + name + "?")) {
       personService
         .deleteId(id)
-        .then(() => {setPersons(persons.filter(person => person.id !== id),
-        setMessage(`'${name}' was deleted`),
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000))
+        .then(() => {
+          setPeople(people.filter(person => person.id !== id))
+          setMessage(`'${name}' was deleted`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
-        .catch(() => {setError(
+        .catch(() => {
+          setError(
           `Information of '${name}' was already removed from server`
-        )
-        setTimeout(() => {
-          setError(null)
-        }, 5000)
-        setPersons(persons.filter(person => person.id !== id))
-      })
+          )
+          setTimeout(() => {
+            setError(null)
+          }, 5000)
+          setPeople(people.filter(person => person.id !== id))
+        })
     }
   }
 
@@ -178,7 +189,7 @@ const App = () => {
             onChange1={handleNameChange} value2={newNumber}
             onChange2={handleNumberChange} />
       <h2>Numbers</h2>
-      {persons.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase())).map(filteredPerson => ( 
+      {people.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase())).map(filteredPerson => ( 
         <ul>
           <Info key={filteredPerson.name} person={filteredPerson} /> <button onClick={() => deleteName(filteredPerson.id, filteredPerson.name)}>delete</button>
         </ul>

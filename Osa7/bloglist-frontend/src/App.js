@@ -8,20 +8,6 @@ import { initializeBlogs } from './reducers/blogReducer'
 import { logInUser, initializeUser, logOutUser } from './reducers/userReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import usersService from './services/users'
-
-import {
-  Container,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Paper,
-  TextField,
-  Button,
-  AppBar,
-  Toolbar
-} from '@material-ui/core'
  
 import {
   Switch,
@@ -36,13 +22,11 @@ const UserInfoBlog = ({ blog }) => {
   )
 }
  
-const UserInfo = ({ user, wantedUser }) => {
+const UserInfo = ({ wantedUser }) => {
   console.log(wantedUser, 'wantedUser in userinfo')
-
-  if (!wantedUser || !user) {
+  if (!wantedUser) {
     return null
   }
-
   return (
     <div>
       <h2>{wantedUser.username}</h2>
@@ -71,14 +55,10 @@ const User = ({ user }) => {
   )
 }
  
-const Users = ({ user, users }) => {
+const Users = ({ users }) => {
   console.log(users, 'users in Users App.js')
 
   const byBlogs = (u1, u2) => u2.blogs.length - u1.blogs.length
-
-  if (!user) {
-    return null
-  }
 
   return (
     <div>
@@ -98,6 +78,15 @@ const Blogs = ({ blogs, blogFormRef, user }) => {
   const byLikes = (b1, b2) => b2.likes - b1.likes
   const sortedblogs = blogs.sort(byLikes)
   console.log(sortedblogs, 'sortedblogs in App.js')
+ 
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5
+  }
+
 
   if ( user ) {
     return (
@@ -106,23 +95,11 @@ const Blogs = ({ blogs, blogFormRef, user }) => {
           <NewBlog user={user}/>
         </Togglable>
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableBody>
-              {sortedblogs.map(blog =>
-                <TableRow key={blog.id}>
-                  <TableCell>
-                    <Link key={blog.id} to={`/blogs/${blog.id}`}>{blog.title}</Link>
-                  </TableCell>
-                  <TableCell>
-                    <Link key={blog.id} to={`/blogs/${blog.id}`}>{blog.author}</Link>
-                  </TableCell>
-                </TableRow>
-              )}
-
-            </TableBody>
-          </Table>
-        </TableContainer>
+        {sortedblogs.map(blog =>
+          <ul key={blog.id} style={blogStyle} className='blog'>
+            <Link key={blog.id} to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
+          </ul>
+        )}
       </div>
     )
   } else {
@@ -136,6 +113,10 @@ const Home = ({
   handleLogout
 }) => {
 
+  const padding = {
+    paddingRight: 5
+  }
+
   if ( !user ) {
     return (
       <div>
@@ -145,17 +126,14 @@ const Home = ({
  
         <form onSubmit={handleLogin}>
           <div>
-            <TextField id="username" label="username" />
+            username
+            <input id='username' name="username" />
           </div>
           <div>
-            <TextField id="password" label="password" type='password' />
+            password
+            <input id='password' name="password" />
           </div>
-          <br />
-          <div>
-            <Button variant="contained" color="primary" type="submit">
-              login
-            </Button>
-          </div>
+          <button id='login'>login</button>
         </form>
       </div>
     )
@@ -163,20 +141,11 @@ const Home = ({
  
   return (
     <div>
-      <AppBar position="static">
-        <Toolbar>
-          <Button color="inherit" component={Link} to="/">
-            blogs
-          </Button>
-          <Button color="inherit" component={Link} to="/users">
-            users
-          </Button>
-          <em>{user.username} logged in</em>
-          <Button color="inherit" to="" component={Link} onClick={handleLogout}>
-           logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <div class="links">
+        <Link style={padding} to="/">blogs</Link>
+        <Link style={padding} to="/users">users</Link>
+        {user.username} logged in <button onClick={handleLogout}>logout</button>
+      </div>
       <h2>blog app</h2>
 
       <Notification />
@@ -231,31 +200,29 @@ const App = () => {
  
   return (
     <div>
-      <Container>
-        <Home 
-          user={user} 
-          handleLogin={handleLogin}
-          handleLogout={handleLogout} 
-          blogFormRef={blogFormRef} 
-          blogs={blogs} 
-        />
-        <Switch>
-          <Route path="/blogs/:id">
-            <Blog user={user} blogs={blogs} />
-          </Route>
-          <Route path="/users/:id">
-            <UserInfo user={user} wantedUser={wantedUser} />
-          </Route>
-          <Route path="/users">
-            <Users user={user} users={users} />
-          </Route>
-          <Route path="/">
-            <Blogs blogs={blogs} 
-              blogFormRef={blogFormRef} 
-              user={user} />
-          </Route>
-        </Switch>
-      </Container>
+      <Home 
+        user={user} 
+        handleLogin={handleLogin}
+        handleLogout={handleLogout} 
+        blogFormRef={blogFormRef} 
+        blogs={blogs} 
+      />
+      <Switch>
+        <Route path="/blogs/:id">
+          <Blog blogs={blogs} />
+        </Route>
+        <Route path="/users/:id">
+          <UserInfo wantedUser={wantedUser} />
+        </Route>
+        <Route path="/users">
+          <Users users={users} />
+        </Route>
+        <Route path="/">
+          <Blogs blogs={blogs} 
+            blogFormRef={blogFormRef} 
+            user={user} />
+        </Route>
+      </Switch>
     </div>
   )
 }
