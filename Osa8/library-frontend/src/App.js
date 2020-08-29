@@ -99,6 +99,7 @@ const App = () => {
  
         <Authors token={token} 
           authors={authors}
+          setError={notify}
           show={page === 'authors'}
         />
  
@@ -122,6 +123,7 @@ const App = () => {
  
       <Authors token={token} 
         authors={authors}
+        setError={notify}
         show={page === 'authors'}
       />
  
@@ -131,7 +133,7 @@ const App = () => {
         token={token}
         show={page === 'add'}
         updateCacheWith={updateCacheWith}
-        setErrorMessage={setErrorMessage}
+        setError={Notify}
       />
  
       <Recommend

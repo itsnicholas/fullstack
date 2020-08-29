@@ -13,10 +13,7 @@ const NewBook = (props) => {
       onError: (error) => {
         console.log(error.graphQLErrors, 'error.graphQLErrors in NewBook') 
         if (error.graphQLErrors.length !== 0) {
-          props.setErrorMessage(error.graphQLErrors[0].message)
-          setTimeout(() => {
-            props.setErrorMessage(null)
-          }, 5000)
+          props.setError(error.graphQLErrors[0].message)
         }
       },
       update: (store, response) => {
