@@ -7,7 +7,7 @@ const LoginForm = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const [ login,result ] = useMutation(LOGIN, {
+  const [ login, result ] = useMutation(LOGIN, {
     onError: (error) => {
       props.setError(error.graphQLErrors[0].message)
     }
