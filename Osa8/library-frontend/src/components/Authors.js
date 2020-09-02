@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { EDIT_USER, ALL_AUTHORS } from './../queries'
 
 const Authors = (props) => {
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
+  const allAuthors = useQuery(ALL_AUTHORS)
+  const [authors, setAuthors] = useState([])
 
-  const [ changeBorn, result ] = useMutation(EDIT_USER, { 
-    refetchQueries: [ { query: ALL_AUTHORS } ]
-  })
+  const [ changeBorn, result ] = useMutation(EDIT_USER)
 
   useEffect(() => {
     if (result.data && result.data.editAuthor === null) {
       props.setError('person not found')
     }
   }, [result.data]) // eslint-disable-line 
+
+  useEffect(() => {
+    if (allAuthors.data) {
+      setAuthors(allAuthors.data.allAuthors)
+    }
+  }, [allAuthors])
 
   const submit = async (event) => {
     event.preventDefault()
@@ -29,8 +35,6 @@ const Authors = (props) => {
   if (!props.show) {
     return null
   }
-
-  const authors = props.authors
 
   if (!props.token) {
     return (

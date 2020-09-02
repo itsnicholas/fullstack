@@ -4,8 +4,8 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Recommend from './components/Recommend'
-import { useQuery, useApolloClient, useSubscription } from '@apollo/client'
-import { ALL_AUTHORS, ALL_BOOKS, BOOK_ADDED } from './queries'
+import { useApolloClient, useSubscription } from '@apollo/client'
+import { ALL_BOOKS, BOOK_ADDED, ALL_AUTHORS, ALL_GENRES } from './queries'
  
 const Notify = ({ errorMessage }) => {
   if ( !errorMessage ) {
@@ -21,23 +21,59 @@ const Notify = ({ errorMessage }) => {
  
 const App = () => {
   const [page, setPage] = useState('authors')
-  const allAuthors = useQuery(ALL_AUTHORS)
-  const [authors, setAuthors] = useState([])
   const [token, setToken] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const client = useApolloClient()
  
-  console.log(allAuthors.data, 'allAuthors.data in App.js')
- 
   const updateCacheWith = (addedBook) => {
     const includedIn = (set, object) => 
       set.map(b => b.id).includes(object.id)  
- 
-    const dataInStore = client.readQuery({ query: ALL_BOOKS })
-    if (!includedIn(dataInStore.allBooks, addedBook)) {
+    try {
+      const dataInStore = client.readQuery({ query: ALL_BOOKS })
+      const dataInStore2 = client.readQuery({ query: ALL_AUTHORS })
+      const dataInStore3 = client.readQuery({ query: ALL_AUTHORS })
+      if (!includedIn(dataInStore.allBooks, addedBook)) {
+        client.writeQuery({
+          query: ALL_BOOKS,
+          data: { allBooks : dataInStore.allBooks.concat(addedBook) }
+        })
+        client.writeQuery({
+          query: ALL_AUTHORS,
+          data: { allAuthors : dataInStore2.allAuthors.concat(addedBook.author) }
+        })
+        client.writeQuery({
+          query: ALL_GENRES,
+          data: { allGenres : dataInStore3.allGenres.concat(addedBook.genres) }
+        })
+        if (addedBook.genres) {
+          addedBook.genres.forEach(genre => {
+            const dataInStore4 = client.readQuery({ query: ALL_BOOKS, variables: { genre: genre } })
+            client.writeQuery({
+              query: ALL_BOOKS,
+              data: { allBooks : dataInStore4.allBooks.concat(addedBook) }
+            })
+          })
+        }
+      }
+    } catch (e) {
+      console.log("error: ", e, ". No projects to load presumably.");
       client.writeQuery({
         query: ALL_BOOKS,
-        data: { allBooks : dataInStore.allBooks.concat(addedBook) }
+        data: { allBooks : addedBook }
+      })
+      client.writeQuery({
+        query: ALL_AUTHORS,
+        data: { allAuthors : addedBook.author }
+      })
+      client.writeQuery({
+        query: ALL_GENRES,
+        data: { allGenres : addedBook.genres }
+      })
+      addedBook.genres.forEach(genre => {
+        client.writeQuery({
+          query: ALL_BOOKS, variables: { genre: genre },
+          data: { allBooks : addedBook }
+        })
       })
     }
   }
@@ -45,8 +81,9 @@ const App = () => {
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       const addedBook = subscriptionData.data.bookAdded
-      console.log(subscriptionData.data, 'subscriptionData.data in NewBook.js')
+      console.log(subscriptionData.data, 'subscriptionData.data in NewBook.js useSubscription(BOOK_ADDED)')
       window.alert(addedBook.title + ' added')
+      console.log(addedBook, 'addedBook in NewBook.js useSubscription(BOOK_ADDED)')
       updateCacheWith(addedBook)
     }
   })
@@ -57,13 +94,6 @@ const App = () => {
       setToken(token)
     }
   }, [])
- 
-  useEffect(() => {
-    if (allAuthors.data) {
-      console.log(allAuthors.data.allAuthors, 'allAuthors.data.allAuthors in App.js')
-      setAuthors(allAuthors.data.allAuthors)
-    }
-  }, [allAuthors])
  
   const logout = () => {
     setToken(null)
@@ -98,7 +128,6 @@ const App = () => {
         />
  
         <Authors token={token} 
-          authors={authors}
           setError={notify}
           show={page === 'authors'}
         />
@@ -122,7 +151,6 @@ const App = () => {
       <Notify errorMessage={errorMessage} />
  
       <Authors token={token} 
-        authors={authors}
         setError={notify}
         show={page === 'authors'}
       />

@@ -23,25 +23,73 @@ const httpLink = new HttpLink({
 })
 
 const wsLink = new WebSocketLink({
-    uri: 'ws://localhost:4000/graphql',
-    options: {
-      reconnect: true
-    }
-  })
-  const splitLink = split(
-    ({ query }) => {
-      const definition = getMainDefinition(query)
-      return (
-        definition.kind === 'OperationDefinition' &&
-        definition.operation === 'subscription'
-      )
-    },
-    wsLink,
-    authLink.concat(httpLink),
-  )
+  uri: 'ws://localhost:4000/graphql',
+  options: {
+    reconnect: true
+  }
+})
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query)
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    )
+  },
+  wsLink,
+  authLink.concat(httpLink),
+)
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      allBooks: {
+        permissions: {
+          merge(existing, incoming, { mergeObjects }) {
+            if (!existing.includes(incoming)) {
+              console.log(mergeObjects(existing, incoming), "allBooks mergeObjects(existing, incoming)")
+              return mergeObjects(existing, incoming);
+            } else {
+              return existing
+            }
+          }
+        },
+        fields: {
+          genre: {
+            read(genre) {
+              console.log(genre, "genre in fields genre")
+              return genre
+            }
+          }
+        }
+      },
+      allAuthors: {
+        permissions: {
+          merge(existing, incoming, { mergeObjects }) {
+            if (!existing.includes(incoming)) {
+              console.log(mergeObjects(existing, incoming), "allAuthors mergeObjects(existing, incoming)")
+              return mergeObjects(existing, incoming);
+            } else {
+              return existing
+            }
+          }
+        }
+      },
+      allGenres: {
+        permissions: {
+          merge(existing, incoming, { mergeObjects }) {
+            if (!existing.includes(incoming)) {
+              console.log(mergeObjects(existing, incoming), "allGenres mergeObjects(existing, incoming)")
+              return mergeObjects(existing, incoming);
+            } else {
+              return existing
+            }
+          }
+        }
+      }
+    }
+  }),
   link: splitLink
 })
 

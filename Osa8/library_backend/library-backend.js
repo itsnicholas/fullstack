@@ -6,6 +6,9 @@ const Author = require('./models/author')
 const User = require('./models/user')
 const jwt = require('jsonwebtoken')
 
+const { PubSub } = require('apollo-server')
+const pubsub = new PubSub()
+
 const JWT_SECRET = 'NEED_HERE_A_SECRET_KEY'
 
 mongoose.set('useFindAndModify', false)
@@ -57,7 +60,7 @@ const typeDefs = gql`
     ): Book
     editAuthor(
       name: String!
-      setBornTo: Int!
+      born: Int!
     ): Author
     createUser(
       username: String!
@@ -69,12 +72,16 @@ const typeDefs = gql`
     ): Token
   }
 
+  type Subscription {
+    bookAdded: Book!
+  }  
+
   type Query {
     bookCount: Int!
     authorCount: Int!
     allGenres: [String]!
     allBooks(author: String, genre: String): [Book]!
-    allAuthors: [Author!]!
+    allAuthors: [Author]!
     me: User
   }
 `
@@ -110,14 +117,17 @@ const resolvers = {
       return authors
     },
     me: (root, args, context) => {
+      console.log(context.currentUser, 'context.currentUser in library-backend.js')
       return context.currentUser
     }
   },
   Author: {
     bookCount: async (root) => {
-      const books = await Book.find({ author: root.id })
-      console.log('books in bookCount', books)
-      return books.length
+      const author = await Author.findById(root.id)
+      .catch(err => console.error(`Failed to find author by id in bookCount: ${err}`))
+      console.log('author in Author bookCount', author)
+      console.log('author.books in Author bookCount', author.bookCount)
+      return author.bookCount
     }
   },
   Mutation: {
@@ -147,7 +157,15 @@ const resolvers = {
             invalidArgs: args,
           })
         }
+        await Author.findOneAndUpdate(
+          { name: args.author }, 
+          { bookCount: author.bookCount + 1 })
+          .catch(err => console.error(`Failed to find and update author when addBook and author exists: ${err}`))
+
         console.log('now we have a new book when author is known', book)
+        
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
+        
         return book
       } else {
         console.log('no author yet')
@@ -180,11 +198,15 @@ const resolvers = {
           })
         }
         console.log('now we have a new book when author was unknown', book)
+        
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
+        
         return book
       }
     },
     editAuthor: async (root, args, context) => {
       const currentUser = context.currentUser
+      console.log(currentUser, 'currentUser in library-backend.js')
 
       if (!currentUser) {
         throw new AuthenticationError("not authenticated")
@@ -192,12 +214,15 @@ const resolvers = {
 
       const updatedAuthor = await Author.findOneAndUpdate(
         { name: args.name }, 
-        { born: args.setBornTo })
-        .catch(err => console.error(`Failed to find and update document: ${err}`))
+        { born: args.born })
+        .catch(err => console.error(`Failed to find and update author when editAuthor: ${err}`))
       return updatedAuthor
     },
     createUser: (root, args) => {
-      const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
+      const user = new User({ 
+        username: args.username, 
+        favoriteGenre: args.favoriteGenre 
+      })
   
       return user.save()
         .catch(error => {
@@ -220,6 +245,11 @@ const resolvers = {
   
       return { value: jwt.sign(userForToken, JWT_SECRET) }
     }
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
+    }
   }
 }
 
@@ -239,6 +269,7 @@ const server = new ApolloServer({
   }
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })

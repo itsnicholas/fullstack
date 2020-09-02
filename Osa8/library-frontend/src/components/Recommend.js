@@ -4,13 +4,14 @@ import { GET_USER, ALL_BOOKS } from './../queries'
 
 const Recommend = (props) => {
   const user = useQuery(GET_USER)
-  const [genre, setGenre] = useState([])
-  const [getBooks, result] = useLazyQuery(ALL_BOOKS)
+  const [genre, setGenre] = useState(null)
+  const [getBooks, result] = useLazyQuery(ALL_BOOKS, {
+    fetchPolicy: "cache-and-network"
+  })
   const [books, setBooks] = useState(null)
 
   useEffect(() => {
     if (user.data) {
-      console.log(user.data.me.favoriteGenre, 'user.data.me.favoriteGenre in Recommend.js')
       setGenre(user.data.me.favoriteGenre)
       getBooks({ variables: { genre: genre } })
     }
@@ -19,7 +20,6 @@ const Recommend = (props) => {
   useEffect(() => {
     if (result.data) {
       setBooks(result.data.allBooks)
-      console.log(result.data.allBooks, 'result.data.allBooks in Recommend')
     }
   }, [result])
     
@@ -30,7 +30,7 @@ const Recommend = (props) => {
   return (
     <div>
       <h2>recommendations</h2>
-      <div>books in your favorite genre <b>{genre}</b></div>
+      <div>books in your favorite genre: <b>{genre}</b></div>
       <table>
       <tbody>
         <tr>

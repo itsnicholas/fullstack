@@ -3,32 +3,35 @@ import { useQuery, useLazyQuery } from '@apollo/client'
 import { ALL_BOOKS, ALL_GENRES } from './../queries'
  
 const Books = (props) => {
-  const allBooks = useQuery(ALL_BOOKS)
   const allGenres = useQuery(ALL_GENRES)
-  const [getBooks, result] = useLazyQuery(ALL_BOOKS)
-  const [books, setBooks] = useState(null)
-  const [genres, setGenres] = useState(null)
+  const [genres, setGenres] = useState([])
+  const [getBooks, result] = useLazyQuery(ALL_BOOKS, {
+    fetchPolicy: "cache-and-network"
+  })
+  const [books, setBooks] = useState([])
+  const [genre, setGenre] = useState('all genres')
  
-  useEffect(() => {
-    if (allBooks.data) {
-      setBooks(allBooks.data.allBooks)
-    }
-  }, [allBooks])
- 
+  
+
   useEffect(() => {
     if (allGenres.data) {
       setGenres(allGenres.data.allGenres)
+      getBooks()
     }
-  }, [allGenres])
+  }, [allGenres, getBooks])
  
   const clickGenre = (genre) => {
     getBooks({ variables: { genre: genre } })
+    if (genre) {
+      setGenre(genre)
+    } else {
+      setGenre('all genres')
+    }
   }
  
   useEffect(() => {
     if (result.data) {
       setBooks(result.data.allBooks)
-      console.log(result.data.allBooks, 'result.data.allBooks in useEffect')
     }
   }, [result])
  
@@ -46,7 +49,7 @@ const Books = (props) => {
   return (
     <div>
       <h2>books</h2>
- 
+      <div>in genre: <b>{genre}</b></div>
       <table>
         <tbody>
           <tr>
