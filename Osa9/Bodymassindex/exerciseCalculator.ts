@@ -1,102 +1,90 @@
 interface Values {
-  value1: number;
+  value1: number[];
   value2: number;
-  value3: boolean;
-  value4: number;
-  value5: string;
-  value6: number;
-  value7: number;
+}
+
+interface MultipleValues {
+  periodLength: number;
+  trainingDays: number;
+  success: boolean;
+  rating: number;
+  ratingDescription: string;
+  target: number;
+  average: number;
 }
 
 const parseArguments = (args: Array<string>): Values => {
   if (args.length < 4) throw new Error('Not enough arguments');
-  let sum = 0;
-  let days = 0;
+  if (isNaN(Number(args[2]))) throw new Error('Arguments contain non numeric value(s)');
+
+  const array: number[] = [];
+  const target = args[2];
+  
   let i;
+  
   for (i = 3; i < args.length; i++) {
     if (isNaN(Number(args[i]))) throw new Error('Arguments contain non numeric value(s)');
-    sum = sum + Number(args[i]);
-    if (Number(args[i]) > 0){
-      days = days + 1;
-    }
+    array.push(Number(args[i]));
   }
-  const lenght = args.length - 3;
-  const average = sum / lenght;
 
-  
-  if (average <= Number(args[2]) - 1) {
-    return {
-      value1: lenght,
-      value2: Number(days),
-      value3: false,
-      value4: 1,
-      value5: 'not good',
-      value6: Number(args[2]),
-      value7: average
-    };
-  } else if (average <= Number(args[2])) {
-    return {
-      value1: lenght,
-      value2: Number(days),
-      value3: false,
-      value4: 2,
-      value5: 'not too bad but could be better',
-      value6: Number(args[2]),
-      value7: average
-    };
-  } else {
-    return {
-      value1: lenght,
-      value2: Number(days),
-      value3: true,
-      value4: 3,
-      value5: 'great!',
-      value6: Number(args[2]),
-      value7: average
-    };
-  }
+  console.log(array);
+
+  return {
+    value1: array,
+    value2: Number(target),
+  };
 };
 
-const calculateExercises = (
-  a: number, 
-  b: number, 
-  c: boolean, 
-  d: number, 
-  e: string, 
-  f: number, 
-  g: number 
-  ): string => {
-  console.log('{ periodLength:', a),
-  console.log('trainingDays:', b),
-  console.log('success:', c),
-  console.log('rating:', d),
-  console.log('ratingDescription:', e),
-  console.log('target:', f),
-  console.log('average:', g, '}');
-  return '{ periodLength: ' + a.toString() + ' trainingDays: ' + b.toString() +
-  ' success: ' + c.toString() + ' rating: ' + d.toString() +
-  ' ratingDescription: ' + e.toString() + ' target: ' + f.toString() +
-  ' average: ' + g.toString() + ' }';
+const calculateExercises = (a: number[], target: number): MultipleValues => {
+  if (a.length < 1) throw new Error('parameters missing');
+  if (isNaN(Number(target))) throw new Error('malformatted parameters');
+
+  target = Number(target);
+  
+  let success = Boolean(false);
+  let rating = Number(0);
+  let ratingDescription = String('');
+  let sum = Number(0);
+  let trainingDays = Number(0);
+
+  let i;
+  for (i = 0; i < a.length; i++) {
+    if (isNaN(Number(a[i]))) throw new Error('malformatted parameters');
+      sum = sum + Number(a[i]);
+      if (Number(a[i]) > 0){
+        trainingDays = trainingDays + 1;
+      }
+    }
+  const periodLength = Number(a.length);
+  const average = Number(sum / periodLength);
+
+  if (average <= target - 1) {
+    ratingDescription = 'bad';
+    rating = 1;
+    console.log({ periodLength, trainingDays, success, rating, ratingDescription, target, average });
+    return { periodLength, trainingDays, success, rating, ratingDescription, target, average };
+  } else if (average <= target) {
+    ratingDescription = 'not too bad but could be better';
+    rating = 2;
+    console.log({ periodLength, trainingDays, success, rating, ratingDescription, target, average });
+    return { periodLength, trainingDays, success, rating, ratingDescription, target, average };
+  } else {
+    ratingDescription = 'great job!';
+    rating = 3;
+    success = true;
+    console.log({ periodLength, trainingDays, success, rating, ratingDescription, target, average });
+    return { periodLength, trainingDays, success, rating, ratingDescription, target, average };
+  }
 };
 
 try {
   const { 
     value1, 
-    value2, 
-    value3, 
-    value4, 
-    value5, 
-    value6, 
-    value7 
+    value2
 } = parseArguments(process.argv);
   calculateExercises(
     value1, 
-    value2, 
-    value3, 
-    value4, 
-    value5, 
-    value6, 
-    value7
+    value2
   );
 } catch (e) {
   if (e instanceof Error) {
@@ -105,3 +93,5 @@ try {
     throw e;
   }
 }
+
+export = calculateExercises;
