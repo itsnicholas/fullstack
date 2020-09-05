@@ -10,18 +10,18 @@ interface Values {
 
 const parseArguments = (args: Array<string>): Values => {
   if (args.length < 4) throw new Error('Not enough arguments');
-  var sum = 0
-  var days = 0
-  var i
+  let sum = 0;
+  let days = 0;
+  let i;
   for (i = 3; i < args.length; i++) {
     if (isNaN(Number(args[i]))) throw new Error('Arguments contain non numeric value(s)');
-    sum = sum + Number(args[i])
+    sum = sum + Number(args[i]);
     if (Number(args[i]) > 0){
-      days = days + 1
+      days = days + 1;
     }
   }
-  const lenght = args.length - 3
-  const average = sum / lenght
+  const lenght = args.length - 3;
+  const average = sum / lenght;
 
   
   if (average <= Number(args[2]) - 1) {
@@ -33,7 +33,7 @@ const parseArguments = (args: Array<string>): Values => {
       value5: 'not good',
       value6: Number(args[2]),
       value7: average
-    }
+    };
   } else if (average <= Number(args[2])) {
     return {
       value1: lenght,
@@ -43,7 +43,7 @@ const parseArguments = (args: Array<string>): Values => {
       value5: 'not too bad but could be better',
       value6: Number(args[2]),
       value7: average
-    }
+    };
   } else {
     return {
       value1: lenght,
@@ -53,9 +53,9 @@ const parseArguments = (args: Array<string>): Values => {
       value5: 'great!',
       value6: Number(args[2]),
       value7: average
-    }
+    };
   }
-}
+};
 
 const calculateExercises = (
   a: number, 
@@ -66,18 +66,18 @@ const calculateExercises = (
   f: number, 
   g: number 
   ): string => {
-  console.log('{ periodLength:', a)
+  console.log('{ periodLength:', a),
   console.log('trainingDays:', b),
   console.log('success:', c),
   console.log('rating:', d),
   console.log('ratingDescription:', e),
   console.log('target:', f),
-  console.log('average:', g, '}')
-  return '{ periodLength: ' + a + ' trainingDays: ' + b +
-  ' success: ' + c + ' rating: ' + d +
-  ' ratingDescription: ' + e + ' target: ' + f +
-  ' average: ' + g + ' }';
-}
+  console.log('average:', g, '}');
+  return '{ periodLength: ' + a.toString() + ' trainingDays: ' + b.toString() +
+  ' success: ' + c.toString() + ' rating: ' + d.toString() +
+  ' ratingDescription: ' + e.toString() + ' target: ' + f.toString() +
+  ' average: ' + g.toString() + ' }';
+};
 
 try {
   const { 
@@ -99,5 +99,9 @@ try {
     value7
   );
 } catch (e) {
-  console.log('Error, something bad happened, message: ', e.message);
+  if (e instanceof Error) {
+    console.log('Error, something bad happened, message: ', e);
+  } else {
+    throw e;
+  }
 }
