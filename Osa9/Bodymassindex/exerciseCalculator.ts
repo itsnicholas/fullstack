@@ -65,7 +65,7 @@ const calculateExercises = (
   e: string, 
   f: number, 
   g: number 
-  ) => {
+  ): string => {
   console.log('{ periodLength:', a)
   console.log('trainingDays:', b),
   console.log('success:', c),
@@ -73,6 +73,10 @@ const calculateExercises = (
   console.log('ratingDescription:', e),
   console.log('target:', f),
   console.log('average:', g, '}')
+  return '{ periodLength: ' + a + ' trainingDays: ' + b +
+  ' success: ' + c + ' rating: ' + d +
+  ' ratingDescription: ' + e + ' target: ' + f +
+  ' average: ' + g + ' }';
 }
 
 try {
