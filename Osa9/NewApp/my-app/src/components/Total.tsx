@@ -1,13 +1,5 @@
 import React from "react";
-
-interface CoursePart {
-    name: string;
-    exerciseCount: number;
-  }
-  
-  interface CourseParts {
-      courseParts: CoursePart[];
-  }
+import { CourseParts } from "../types";
 
 const Total: React.FC<CourseParts> = (props) => {
 
