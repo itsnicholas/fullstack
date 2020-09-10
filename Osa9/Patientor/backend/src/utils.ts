@@ -8,6 +8,7 @@ const toNewPatientEntry = (object: any): NewPatientEntry => {
     ssn: parseSsn(object.ssn),
     gender: parseGender(object.gender),
     occupation: parseOccupation(object.occupation),
+    entries: [],
   }
 
   return newEntry;
@@ -53,6 +54,17 @@ const parseGender = (gender: any): Gender => {
   return gender;
 };
 
+//const parseEntries = (entries: any): Entry => {
+//  var i;
+//  for (i = 0; i < entries.length; i++) {
+//    if (!isEntry(entries[i])) {
+//      throw new Error('Incorrect or missing entry: ' + entries[i])
+//    }
+//  }
+//
+// return entries;
+//};
+
 const isString = (text: any): text is string => {
   return typeof text === 'string' || text instanceof String;
 };
@@ -64,5 +76,10 @@ const isDate = (date: string): boolean => {
 const isGender = (param: any): param is Gender => {
   return Object.values(Gender).includes(param);
 };
+
+//const isEntry = (param: any): param is Entry => {
+//  return param instanceof Entry
+//  return Object.type(Entry).includes(param);
+//};
 
 export default toNewPatientEntry;
