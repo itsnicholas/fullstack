@@ -3,6 +3,7 @@ import axios from "axios";
 import { Container, Icon } from "semantic-ui-react";
 import { useParams } from 'react-router-dom';
 
+import { updatePatientList2 } from "../state/reducer";
 import { apiBaseUrl } from "../constants";
 import { useStateValue } from "../state";
 import { DetailedPatient, Gender } from "../types";
@@ -14,18 +15,18 @@ const PatientInfo: React.FC = () => {
 
   
   React.useEffect(() => {
-    const fetchPatient = async () => {
+    const updatePatient = async () => {
       try {
         const { data: patientFromApi } = await axios.get<DetailedPatient>(
           `${apiBaseUrl}/api/patients/${id}`
         );
-        dispatch({ type: "UPDATE_PATIENT", payload: patientFromApi });
+        dispatch(updatePatientList2(patientFromApi));
       } catch (e) {
         console.error(e);
       }
     };
     if (detailedPatients[id] !== patients[id]) {
-      fetchPatient();
+      updatePatient();
     }
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);

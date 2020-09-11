@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { Container, Table, Button } from "semantic-ui-react";
 
+import { setNewPatient } from "../state/reducer";
 import { PatientFormValues } from "../AddPatientModal/AddPatientForm";
 import AddPatientModal from "../AddPatientModal";
 import { Patient } from "../types";
@@ -29,7 +30,7 @@ const PatientListPage: React.FC = () => {
         `${apiBaseUrl}/api/patients`,
         values
       );
-      dispatch({ type: "ADD_PATIENT", payload: newPatient });
+      dispatch(setNewPatient(newPatient));
       closeModal();
     } catch (e) {
       console.error(e.response.data);
