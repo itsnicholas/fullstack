@@ -1,5 +1,5 @@
 import { NewPatientEntry, Gender } from './types';
-import { FinnishSSN } from 'finnish-ssn'
+//import { FinnishSSN } from 'finnish-ssn'
 
 const toNewPatientEntry = (object: any): NewPatientEntry => {
   const newEntry: NewPatientEntry = {
@@ -31,7 +31,8 @@ const parseDateOfBirth = (date: any): string => {
 };
 
 const parseSsn = (ssn: any): string => {
-  if (!FinnishSSN.validate(ssn)) {
+  if (!ssn || !isString(ssn)) {
+  //if (!FinnishSSN.validate(ssn)) {
     throw new Error('Incorrect or missing ssn: ' + ssn);
   }
     

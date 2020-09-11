@@ -9,7 +9,9 @@ const getEntries = (): Array<PatientEntry> => {
 const getEntry = ( id: string ): PatientEntry | undefined => {
   console.log(id, 'id in patientService.ts')
   const patient = patients.find(patient => patient.id === id)
-  console.log(id, 'patient in patientService.ts')
+  console.log(patient, '1st patient in patientService.ts')
+  patient!.entries = [];
+  console.log(patient, '2nd patient in patientService.ts')
   return patient;
 };
 
