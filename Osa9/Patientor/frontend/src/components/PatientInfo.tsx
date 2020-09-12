@@ -3,10 +3,11 @@ import axios from "axios";
 import { Container, Icon } from "semantic-ui-react";
 import { useParams } from 'react-router-dom';
 
+import EntryInfo from "./EntryInfo";
 import { updatePatientList2 } from "../state/reducer";
 import { apiBaseUrl } from "../constants";
 import { useStateValue } from "../state";
-import { DetailedPatient, Gender } from "../types";
+import { DetailedPatient, Gender, Entry } from "../types";
 
 const PatientInfo: React.FC = () => {
   const [{ detailedPatients }, dispatch] = useStateValue();
@@ -48,6 +49,10 @@ const PatientInfo: React.FC = () => {
           <h3>{detailedPatients[id].name} {button}</h3> 
           <div>ssn: {detailedPatients[id].ssn}</div>
           <div>occupation: {detailedPatients[id].occupation}</div>
+          <h4>entries</h4>
+            {detailedPatients[id].entries.map((entry: Entry, index) => 
+              <EntryInfo key={index} entry={entry} />
+            )}
         </Container>
       </div>
     );
