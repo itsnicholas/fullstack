@@ -1,11 +1,16 @@
-import diagnoseData from '../../data/diagnoses.json'
+import diagnoseData from '../../data/diagnoses'
 
 import { DiagnoseEntry } from '../types';
 
-const diagnoses: Array<DiagnoseEntry> = diagnoseData;
+//const diagnoses: Array<DiagnoseEntry> = diagnoseData;
 
 const getEntries = (): Array<DiagnoseEntry> => {
-  return diagnoses;
+  return diagnoseData;
+};
+
+const getEntry = ( name: string ): DiagnoseEntry | undefined => {
+  const patient = diagnoseData.find(diagnosis => diagnosis.name === name)
+  return patient;
 };
 
 const addEntry = () => {
@@ -14,5 +19,6 @@ const addEntry = () => {
 
 export default {
   getEntries,
+  getEntry,
   addEntry
 };

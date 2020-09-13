@@ -1,7 +1,7 @@
 import { DiagnoseEntry } from "../src/types";
-//import util from "../src/utils";
+import util from "../src/utils";
   
-const data: DiagnoseEntry[]  = [
+const data = [
   {
     "code": "M24.2",
     "name": "Disorder of ligament",
@@ -81,10 +81,10 @@ const data: DiagnoseEntry[]  = [
   }
 ]
 
-//const diagnoseEntries: DiagnoseEntry[] = data.map(obj => {
-//  const object = util.toNewDiagnoseEntry(obj) as DiagnoseEntry
-//  object.code = obj.code
-//  return object
-//})
+const diagnoseEntries: DiagnoseEntry[] = data.map(obj => {
+  const object = util.toNewDiagnoseEntry(obj) as DiagnoseEntry
+  object.code = obj.code
+  return object
+})
   
-export default data;
+export default diagnoseEntries;

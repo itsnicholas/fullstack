@@ -1,4 +1,4 @@
-import { NewPatientEntry, Gender, EntryType, Entry } from './types';
+import { NewPatientEntry, Gender, EntryType, Entry, DiagnoseEntry } from './types';
 //import { FinnishSSN } from 'finnish-ssn'
 
 const toNewPatientEntry = (object: any): NewPatientEntry => {
@@ -16,15 +16,15 @@ const toNewPatientEntry = (object: any): NewPatientEntry => {
   return newEntry;
 }
 
-//const toNewDiagnoseEntry = (object: any): DiagnoseEntry => {
-//  const newDiagnoseEntry: DiagnoseEntry = {
-//    code: parseCode(object.code),
-//    name: parseName(object.name),
-//    latin: parseLatin(object.latin),
-//  }
-//
-//  return newDiagnoseEntry;
-//}
+const toNewDiagnoseEntry = (object: any): DiagnoseEntry => {
+  const newDiagnoseEntry: DiagnoseEntry = {
+    code: parseCode(object.code),
+    name: parseName(object.name),
+    latin: parseLatin(object.latin),
+  }
+
+  return newDiagnoseEntry;
+}
 
 const parseName = (name: any): string => {
   if (!name || !isString(name)) {
@@ -68,21 +68,22 @@ const parseGender = (gender: any): Gender => {
   return gender;
 };
 
-//const parseCode = (code: any): string => {
-//  if (!code || !isString(code)) {
-//    throw new Error('Incorrect or missing code: ' + code);
-//  }
-//
-//  return code;
-//}
+const parseCode = (code: any): string => {
+  if (!code || !isString(code)) {
+    throw new Error('Incorrect or missing code: ' + code);
+  }
 
-//const parseLatin = (latin: any): string => {
-//  if (!latin || !isString(latin)) {
-//    throw new Error('Incorrect or missing comment: ' + latin);
-//  }
-//
-//  return latin;
-//}
+  return code;
+}
+
+const parseLatin = (latin: any): string => {
+  if (latin !== undefined) {
+    if (!isString(latin)) {
+      throw new Error('Incorrect or missing comment: ' + latin);
+    }
+  }
+ return latin;
+}
 
 const parseEntry = (entry: any): EntryType => {
   console.log(entry.type)
@@ -109,4 +110,4 @@ const isEntry = (param: any): param is EntryType => {
   return Object.values(EntryType).includes(param);
 };
 
-export default { toNewPatientEntry };
+export default { toNewPatientEntry, toNewDiagnoseEntry };
