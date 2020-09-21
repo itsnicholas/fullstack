@@ -3,11 +3,11 @@ import axios from "axios";
 import { Container, Icon } from "semantic-ui-react";
 import { useParams } from 'react-router-dom';
 
-import EntryInfo from "./EntryInfo";
-import { updatePatientList2 } from "../state/reducer";
+import EntryDetails from "./EntryDetails";
+import { updatePatientList2, setDiagnosisList } from "../state/reducer";
 import { apiBaseUrl } from "../constants";
 import { useStateValue } from "../state";
-import { DetailedPatient, Gender, Entry } from "../types";
+import { DetailedPatient, Gender, Entry, DiagnoseEntry } from "../types";
 
 const PatientInfo: React.FC = () => {
   const [{ detailedPatients }, dispatch] = useStateValue();
@@ -29,6 +29,17 @@ const PatientInfo: React.FC = () => {
     if (detailedPatients[id] !== patients[id]) {
       updatePatient();
     }
+    const fetchPatientList = async () => {
+      try {
+        const { data: diagnosisListFromApi } = await axios.get<DiagnoseEntry[]>(
+          `${apiBaseUrl}/api/diagnoses`
+          );
+        dispatch(setDiagnosisList(diagnosisListFromApi));
+      } catch (e) {
+        console.error(e);
+      }
+      };
+        fetchPatientList();
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
   
@@ -51,7 +62,7 @@ const PatientInfo: React.FC = () => {
           <div>occupation: {detailedPatients[id].occupation}</div>
           <h4>entries</h4>
             {detailedPatients[id].entries.map((entry: Entry, index) => 
-              <EntryInfo key={index} entry={entry} />
+              <EntryDetails key={index} entry={entry} />
             )}
         </Container>
       </div>

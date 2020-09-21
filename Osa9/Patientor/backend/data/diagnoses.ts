@@ -79,12 +79,12 @@ const data = [
     "name": "Other proliferative retinopathy",
     "latin": "Alia retinopathia proliferativa"
   }
-]
+];
 
 const diagnoseEntries: DiagnoseEntry[] = data.map(obj => {
-  const object = util.toNewDiagnoseEntry(obj) as DiagnoseEntry
-  object.code = obj.code
-  return object
-})
+  const object = util.toNewDiagnoseEntry(obj) as DiagnoseEntry;
+  object.code = obj.code;
+  return object;
+});
   
 export default diagnoseEntries;

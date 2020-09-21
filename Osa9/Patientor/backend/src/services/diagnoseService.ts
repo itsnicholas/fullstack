@@ -1,4 +1,4 @@
-import diagnoseData from '../../data/diagnoses'
+import diagnoseData from '../../data/diagnoses';
 
 import { DiagnoseEntry } from '../types';
 
@@ -9,7 +9,7 @@ const getEntries = (): Array<DiagnoseEntry> => {
 };
 
 const getEntry = ( name: string ): DiagnoseEntry | undefined => {
-  const patient = diagnoseData.find(diagnosis => diagnosis.name === name)
+  const patient = diagnoseData.find(diagnosis => diagnosis.name === name);
   return patient;
 };
 

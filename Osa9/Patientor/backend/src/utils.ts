@@ -1,30 +1,34 @@
-import { NewPatientEntry, Gender, EntryType, Entry, DiagnoseEntry } from './types';
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NewPatientEntry, Gender, Entry, EntryType, DiagnoseEntry } from './types';
 //import { FinnishSSN } from 'finnish-ssn'
 
 const toNewPatientEntry = (object: any): NewPatientEntry => {
+  console.log(object.entries, 'object.entries in utils.ts');
   const newEntry: NewPatientEntry = {
     name: parseName(object.name),
     dateOfBirth: parseDateOfBirth(object.dateOfBirth),
     ssn: parseSsn(object.ssn),
     gender: parseGender(object.gender),
     occupation: parseOccupation(object.occupation),
-    entries: object.entries.map((entry: Entry) => 
-      parseEntry(entry)
-    )
-  }
+    entries: parseEntries(object.entries)
+  };
 
   return newEntry;
-}
+};
 
 const toNewDiagnoseEntry = (object: any): DiagnoseEntry => {
   const newDiagnoseEntry: DiagnoseEntry = {
     code: parseCode(object.code),
     name: parseName(object.name),
     latin: parseLatin(object.latin),
-  }
+  };
 
   return newDiagnoseEntry;
-}
+};
 
 const parseName = (name: any): string => {
   if (!name || !isString(name)) {
@@ -32,7 +36,7 @@ const parseName = (name: any): string => {
   }
 
   return name;
-}
+};
 
 const parseDateOfBirth = (date: any): string => {
   if (!date || !isString(date) || !isDate(date)) {
@@ -57,12 +61,12 @@ const parseOccupation = (occupation: any): string => {
   }
 
   return occupation;
-}
+};
 
 const parseGender = (gender: any): Gender => {
-  console.log(gender)
+  console.log(gender);
   if (!gender || !isGender(gender)) {
-    throw new Error('Incorrect or missing gender: ' + gender)
+    throw new Error('Incorrect or missing gender: ' + gender);
   }
 
   return gender;
@@ -74,25 +78,30 @@ const parseCode = (code: any): string => {
   }
 
   return code;
-}
+};
 
 const parseLatin = (latin: any): string => {
-  if (latin !== undefined) {
+  if (latin) {
     if (!isString(latin)) {
       throw new Error('Incorrect or missing comment: ' + latin);
     }
   }
  return latin;
-}
+};
 
-const parseEntry = (entry: any): EntryType => {
-  console.log(entry.type)
-  if (!entry.type || !isEntry(entry.type)) {
-    throw new Error('Incorrect or missing entry: ' + entry);
+const parseEntries = (entries: any[]): Entry[] => {
+  if (!entries || entries.length === 0) {
+    return [];
   }
+  console.log(entries, 'entires in utils.ts');
+  entries.forEach((entry: any) => {
+    if (!isEntry(entry.type)) {
+      throw new Error('Incorrect or missing entry: ' + entry);
+    }
+  });
 
-  return entry;
-}
+  return entries;
+};
 
 const isString = (text: any): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -107,6 +116,7 @@ const isGender = (param: any): param is Gender => {
 };
 
 const isEntry = (param: any): param is EntryType => {
+  console.log(param, 'param in tuils.ts');
   return Object.values(EntryType).includes(param);
 };
 

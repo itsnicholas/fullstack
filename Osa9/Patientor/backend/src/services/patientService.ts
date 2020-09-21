@@ -7,7 +7,7 @@ const getEntries = (): Array<PatientEntry> => {
 };
 
 const getEntry = ( id: string ): PatientEntry | undefined => {
-  const patient = patients.find(patient => patient.id === id)
+  const patient = patients.find(patient => patient.id === id);
   return patient;
 };
 
@@ -23,11 +23,11 @@ const getNonSensitiveEntries = (): NonSensitivePatientEntry[] => {
 };
 
 const addEntry = ( entry: NewPatientEntry ): PatientEntry => {
-    let id = 'd' + String(Math.floor(Math.random() * Math.floor(9999999))) + '-f723-11e9-8f0b-362b9e155667'
+    const id = 'd' + String(Math.floor(Math.random() * Math.floor(9999999))) + '-f723-11e9-8f0b-362b9e155667';
     const newPatientEntry = {
       id: id,
       ...entry
-    }
+    };
   
   patients.push(newPatientEntry);
   return newPatientEntry;  
