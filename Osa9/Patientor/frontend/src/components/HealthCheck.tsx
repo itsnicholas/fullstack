@@ -14,11 +14,7 @@ const HealthCheck: React.FC<Props> = ({ entry }) => {
 
   const codes: string[] | undefined = entry.diagnosisCodes;
 
-  console.log(entry.healthCheckRating, 'entry.healthCheckRating');
-  console.log(HealthCheckRating["Healthy"], 'HealthCheckRating["Healthy"]');
-
   var button;
-
   if (entry.healthCheckRating === HealthCheckRating["Healthy"]) {
     button = <Icon color='green' name='heart' size='small' />;
   } else if (entry.healthCheckRating === HealthCheckRating["LowRisk"]) {

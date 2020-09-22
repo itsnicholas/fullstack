@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NewPatientEntry, Gender, Entry, EntryType, DiagnoseEntry } from './types';
+import { HealthCheckRating, Discharge, NewPatientEntry, Gender, Entry, EntryType, DiagnoseEntry, HospitalEntry, OccupationalHealthcareEntry, HealthCheckEntry } from './types';
 //import { FinnishSSN } from 'finnish-ssn'
 
 const toNewPatientEntry = (object: any): NewPatientEntry => {
@@ -21,6 +21,14 @@ const toNewPatientEntry = (object: any): NewPatientEntry => {
 };
 
 const toNewDiagnoseEntry = (object: any): DiagnoseEntry => {
+  if (!object.latin) {
+    const newDiagnoseEntry: DiagnoseEntry = {
+      code: parseCode(object.code),
+      name: parseName(object.name),
+    };
+
+    return newDiagnoseEntry;
+  } else {
   const newDiagnoseEntry: DiagnoseEntry = {
     code: parseCode(object.code),
     name: parseName(object.name),
@@ -28,6 +36,83 @@ const toNewDiagnoseEntry = (object: any): DiagnoseEntry => {
   };
 
   return newDiagnoseEntry;
+  }
+};
+
+const toNewEntryEntries = (object: any): HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry => {
+  switch(object.type) {
+    case "Hospital":
+      if (!object.diagnosisCodes) {
+      const newEntry1: HospitalEntry = {
+        id: parseId(object.id),
+        description: parseDescription(object.id),
+        date: parseDate(object.id),
+        specialist: parseSpecialist(object.id),
+        type: object.type,
+        discharge: parseDischarge(object.discharge),
+      };
+        return newEntry1;
+      } else {
+        const newEntry1: HospitalEntry = {
+          id: parseId(object.id),
+          description: parseDescription(object.id),
+          date: parseDate(object.id),
+          specialist: parseSpecialist(object.id),
+          type: object.type,
+          discharge: parseDischarge(object.discharge),
+          diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
+        };
+        return newEntry1;
+      }
+    case "OccupationalHealthcare":
+      if (!object.diagnosisCodes) {
+      const newEntry2: OccupationalHealthcareEntry = {
+        id: parseId(object.id),
+        description: parseDescription(object.id),
+        date: parseDate(object.id),
+        specialist: parseSpecialist(object.id),
+        type: object.type,
+        employerName: parseEmployerName(object.employerName)
+      };
+        return newEntry2;
+      } else {
+        const newEntry1: OccupationalHealthcareEntry = {
+          id: parseId(object.id),
+          description: parseDescription(object.id),
+          date: parseDate(object.id),
+          specialist: parseSpecialist(object.id),
+          type: object.type,
+          employerName: parseEmployerName(object.employerName),
+          diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
+        };
+        return newEntry1;
+      }     
+    case "HealthCheck":
+      if (!object.diagnosisCodes) {
+        const newEntry3: HealthCheckEntry = {
+          id: parseId(object.id),
+          description: parseDescription(object.id),
+          date: parseDate(object.id),
+          specialist: parseSpecialist(object.id),
+          type: object.type,
+          healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
+        };
+        return newEntry3;
+      } else {
+        const newEntry1: HealthCheckEntry = {
+          id: parseId(object.id),
+          description: parseDescription(object.id),
+          date: parseDate(object.id),
+          specialist: parseSpecialist(object.id),
+          type: object.type,
+          healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
+          diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
+        };
+        return newEntry1;
+      }     
+    default:
+      return assertNever(object);
+    }
 };
 
 const parseName = (name: any): string => {
@@ -103,6 +188,82 @@ const parseEntries = (entries: any[]): Entry[] => {
   return entries;
 };
 
+const parseId = (id: any): string => {
+  if (!id || !isString(id)) {
+    throw new Error('Incorrect or missing id: ' + id);
+  }
+
+  return id;
+};
+
+const parseDescription = (description: any): string => {
+  if (!description || !isString(description)) {
+    throw new Error('Incorrect or missing description: ' + description);
+  }
+
+  return description;
+};
+
+const parseDate = (date: any): string => {
+  if (!date || !isString(date)) {
+    throw new Error('Incorrect or missing date: ' + date);
+  }
+
+  return date;
+};
+
+const parseSpecialist = (specialist: any): string => {
+  if (!specialist || !isString(specialist)) {
+    throw new Error('Incorrect or missing specialist: ' + specialist);
+  }
+
+  return specialist;
+};
+
+const parseEmployerName = (employerName: any): string => {
+  if (!employerName || !isString(employerName)) {
+    throw new Error('Incorrect or missing employerName: ' + employerName);
+  }
+
+  return employerName;
+};
+
+const parseDischarge = (discharge: any): Discharge => {
+  if (!discharge || !isString(discharge.date) || !isString(discharge.criteria)) {
+    throw new Error('Incorrect or missing discharge: ' + discharge);
+  }
+
+  return discharge;
+};
+
+const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
+  if (!healthCheckRating || !isHealthCheckRating(healthCheckRating)) {
+    throw new Error('Incorrect or missing healthCheckRating: ' + healthCheckRating);
+  }
+
+  return healthCheckRating;
+};
+
+const parseDiagnosisCodes = (diagnosisCodes: any): string[] => {
+  if (!diagnosisCodes) {
+    throw new Error('Incorrect or missing diagnosisCodes: ' + diagnosisCodes)
+  }
+  var i;
+  for (i = 0; i < diagnosisCodes.length; i++) {
+    if (!isString(diagnosisCodes[i])) {
+      throw new Error('Incorrect or missing diagnosisCodes: ' + diagnosisCodes);
+    }
+  }
+
+  return diagnosisCodes;
+};
+
+const assertNever = (entry: any): any => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(entry)}`
+  );
+};
+
 const isString = (text: any): text is string => {
   return typeof text === 'string' || text instanceof String;
 };
@@ -120,4 +281,8 @@ const isEntry = (param: any): param is EntryType => {
   return Object.values(EntryType).includes(param);
 };
 
-export default { toNewPatientEntry, toNewDiagnoseEntry };
+const isHealthCheckRating = (param: any): param is HealthCheckRating => {
+  return Object.values(HealthCheckRating).includes(param);
+};
+
+export default { toNewPatientEntry, toNewDiagnoseEntry, toNewEntryEntries };
