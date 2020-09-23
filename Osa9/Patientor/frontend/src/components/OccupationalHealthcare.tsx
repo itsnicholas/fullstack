@@ -17,7 +17,7 @@ const OccupationalHealthcare: React.FC<Props> = ({ entry }) => {
   if (codes !== undefined && diagnoses !== undefined) { 
       return (
         <div className="App">
-          {entry.date} <Icon name='doctor' size='big' />
+          {entry.date} <Icon name='doctor' size='big' /> {entry.employerName}
           <br /><i>{entry.description}</i>
           {codes.map((code: string, index) => 
             <li key={index}>{code} {diagnoses[code]?.name}</li>

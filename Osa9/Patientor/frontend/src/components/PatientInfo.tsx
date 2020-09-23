@@ -1,20 +1,29 @@
 import React from "react";
 import axios from "axios";
-import { Container, Icon } from "semantic-ui-react";
+import { Container, Icon, Button } from "semantic-ui-react";
 import { useParams } from 'react-router-dom';
 
+import AddEntryModal from "../AddPatientModal/AddEntryModal";
 import EntryDetails from "./EntryDetails";
 import { updatePatientList2, setDiagnosisList } from "../state/reducer";
 import { apiBaseUrl } from "../constants";
 import { useStateValue } from "../state";
-import { DetailedPatient, Gender, Entry, DiagnoseEntry } from "../types";
+import { EntryFormValues, DetailedPatient, Gender, Entry, DiagnoseEntry } from "../types";
 
 const PatientInfo: React.FC = () => {
   const [{ detailedPatients }, dispatch] = useStateValue();
   const [{ patients }, ] = useStateValue();
   const { id } = useParams<{ id: string }>();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
 
-  
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
   React.useEffect(() => {
     const updatePatient = async () => {
       try {
@@ -42,6 +51,22 @@ const PatientInfo: React.FC = () => {
         fetchPatientList();
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      console.log(values, 'values in post function in PatientInfo.tsx')
+      const { data: updatedPatient } = await axios.post<DetailedPatient>(
+        `${apiBaseUrl}/api/patients/${id}/entries`,
+        values
+      );
+      console.log(values, 'values in post function in PatientInfo.tsx')
+      dispatch(updatePatientList2(updatedPatient));
+      closeModal();
+    } catch (e) {
+      console.error(e.response.data);
+      setError(e.response.data.error);
+    }
+  };
   
   if (detailedPatients[id] !== undefined) {
     var button;
@@ -64,6 +89,13 @@ const PatientInfo: React.FC = () => {
             {detailedPatients[id].entries.map((entry: Entry, index) => 
               <EntryDetails key={index} entry={entry} />
             )}
+          <AddEntryModal
+            modalOpen={modalOpen}
+            onSubmit={submitNewEntry}
+            error={error}
+            onClose={closeModal}
+          />
+          <Button onClick={() => openModal()}>Add New Entry</Button>
         </Container>
       </div>
     );

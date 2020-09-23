@@ -80,3 +80,5 @@ export interface DiagnoseEntry {
   name: string;
   latin?: string;
 }
+
+export type EntryFormValues = Omit<OccupationalHealthcareEntry, 'id'>;

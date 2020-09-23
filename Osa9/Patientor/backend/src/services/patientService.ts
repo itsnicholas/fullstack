@@ -1,6 +1,8 @@
 import patients from '../../data/patients';
 
-import { NonSensitivePatientEntry, PatientEntry, NewPatientEntry, Entry } from '../types';
+import { OccupationalHealthcareEntry, NonSensitivePatientEntry, PatientEntry, NewPatientEntry, Entry } from '../types';
+
+export type EntryFormValues = Omit<OccupationalHealthcareEntry, 'id'>;
 
 const getEntries = (): Array<PatientEntry> => {
   return patients;
@@ -33,21 +35,27 @@ const addEntry = ( entry: NewPatientEntry ): PatientEntry => {
   return newPatientEntry;  
 };
 
-const addEntries = ( entry: Entry, id: string ): Entry[] => {
+const addEntriesOccupationalHealthcare = ( entry: EntryFormValues, id: string ): PatientEntry | undefined  => {
+  console.log('do we get here?')
   const patient = patients.find(patient => patient.id === id);
   if (patient) {
+    const id = 'd' + String(Math.floor(Math.random() * Math.floor(9999999))) + '-c4b4-4fec-ac4d-df4fe1f85f62';
     var entries: Entry[] = [];
     entries = patient.entries;
-    entries.push(entry);
+    const updatedEntry: OccupationalHealthcareEntry = {
+      id: id,
+      ...entry
+    };
+    entries.push(updatedEntry);
     const updatedPatientEntry: PatientEntry = {
       ...patient,
       entries: entries
     };
     patients.filter(p => p !== patient);
     patients.push(updatedPatientEntry);
-    return entries; 
+    return updatedPatientEntry; 
   } 
-   return [];
+   return patient;
 };
 
 export default {
@@ -55,5 +63,5 @@ export default {
   addEntry,
   getEntry,
   getNonSensitiveEntries,
-  addEntries
+  addEntriesOccupationalHealthcare
 };

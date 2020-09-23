@@ -3,7 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HealthCheckRating, Discharge, NewPatientEntry, Gender, Entry, EntryType, DiagnoseEntry, HospitalEntry, OccupationalHealthcareEntry, HealthCheckEntry } from './types';
+import { HospitalEntryWithoutID, NewPatientEntry, Gender, Entry, EntryType, DiagnoseEntry, OccupationalHealthcareEntryWithoutID } from './types';
+//HealthCheckRating, Discharge, , HealthCheckEntryWithoutID
 //import { FinnishSSN } from 'finnish-ssn'
 
 const toNewPatientEntry = (object: any): NewPatientEntry => {
@@ -39,80 +40,81 @@ const toNewDiagnoseEntry = (object: any): DiagnoseEntry => {
   }
 };
 
-const toNewEntryEntries = (object: any): HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry => {
-  switch(object.type) {
-    case "Hospital":
+const toNewEntryEntriesHospital = (object: any): HospitalEntryWithoutID => {
+  if (!object.diagnosisCodes) {
+    const newEntry1: HospitalEntryWithoutID = {
+      description: parseDescription(object.description),
+      date: parseDate(object.date),
+      specialist: parseSpecialist(object.specialist),
+      type: object.type,
+      discharge: parseDischarge(object.discharge),
+    };
+    return newEntry1;
+  } else {
+    const newEntry1: HospitalEntryWithoutID = {
+      description: parseDescription(object.description),
+      date: parseDate(object.date),
+      specialist: parseSpecialist(object.specialist),
+      type: object.type,
+      discharge: parseDischarge(object.discharge),
+      diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
+    };
+  return newEntry1;
+  }
+}
+
+const toNewEntryEntriesOccupationalHealthcare = (object: any): OccupationalHealthcareEntryWithoutID => {
+     
+    //case "OccupationalHealthcare":
       if (!object.diagnosisCodes) {
-      const newEntry1: HospitalEntry = {
-        id: parseId(object.id),
-        description: parseDescription(object.id),
-        date: parseDate(object.id),
-        specialist: parseSpecialist(object.id),
-        type: object.type,
-        discharge: parseDischarge(object.discharge),
-      };
-        return newEntry1;
-      } else {
-        const newEntry1: HospitalEntry = {
-          id: parseId(object.id),
-          description: parseDescription(object.id),
-          date: parseDate(object.id),
-          specialist: parseSpecialist(object.id),
-          type: object.type,
-          discharge: parseDischarge(object.discharge),
-          diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
-        };
-        return newEntry1;
-      }
-    case "OccupationalHealthcare":
-      if (!object.diagnosisCodes) {
-      const newEntry2: OccupationalHealthcareEntry = {
-        id: parseId(object.id),
-        description: parseDescription(object.id),
-        date: parseDate(object.id),
-        specialist: parseSpecialist(object.id),
+      const newEntry2: OccupationalHealthcareEntryWithoutID = {
+        description: parseDescription(object.description),
+        date: parseDate(object.date),
+        specialist: parseSpecialist(object.specialist),
         type: object.type,
         employerName: parseEmployerName(object.employerName)
       };
+      console.log(newEntry2, 'newEntry2 in utils')
         return newEntry2;
       } else {
-        const newEntry1: OccupationalHealthcareEntry = {
-          id: parseId(object.id),
-          description: parseDescription(object.id),
-          date: parseDate(object.id),
-          specialist: parseSpecialist(object.id),
+        console.log('object.diagnosisCodes in utils')
+        const newEntry1: OccupationalHealthcareEntryWithoutID = {
+          description: parseDescription(object.description),
+          date: parseDate(object.date),
+          specialist: parseSpecialist(object.specialist),
           type: object.type,
           employerName: parseEmployerName(object.employerName),
           diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
         };
+        console.log(newEntry1, 'newEntry1 in utils')
         return newEntry1;
       }     
-    case "HealthCheck":
-      if (!object.diagnosisCodes) {
-        const newEntry3: HealthCheckEntry = {
-          id: parseId(object.id),
-          description: parseDescription(object.id),
-          date: parseDate(object.id),
-          specialist: parseSpecialist(object.id),
-          type: object.type,
-          healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
-        };
-        return newEntry3;
-      } else {
-        const newEntry1: HealthCheckEntry = {
-          id: parseId(object.id),
-          description: parseDescription(object.id),
-          date: parseDate(object.id),
-          specialist: parseSpecialist(object.id),
-          type: object.type,
-          healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
-          diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
-        };
-        return newEntry1;
-      }     
-    default:
-      return assertNever(object);
-    }
+    //case "HealthCheck":
+      //if (!object.diagnosisCodes) {
+        //const newEntry3: HealthCheckEntryWithoutID = {
+          //id: parseId(object.id),
+          //description: parseDescription(object.id),
+          //date: parseDate(object.id),
+          //specialist: parseSpecialist(object.id),
+          //type: object.type,
+          //healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
+        //};
+        //return newEntry3;
+      //} else {
+        //const newEntry1: HealthCheckEntryWithoutID = {
+          //id: parseId(object.id),
+          //description: parseDescription(object.id),
+          //date: parseDate(object.id),
+          //specialist: parseSpecialist(object.id),
+          //type: object.type,
+          //healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
+          //diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
+        //};
+        //return newEntry1;
+      //}     
+    //default:
+      //return assertNever(object);
+    //}
 };
 
 const parseName = (name: any): string => {
@@ -188,13 +190,13 @@ const parseEntries = (entries: any[]): Entry[] => {
   return entries;
 };
 
-const parseId = (id: any): string => {
-  if (!id || !isString(id)) {
-    throw new Error('Incorrect or missing id: ' + id);
-  }
-
-  return id;
-};
+//const parseId = (id: any): string => {
+//  if (!id || !isString(id)) {
+//    throw new Error('Incorrect or missing id: ' + id);
+//  }
+//
+//  return id;
+//};
 
 const parseDescription = (description: any): string => {
   if (!description || !isString(description)) {
@@ -236,13 +238,13 @@ const parseDischarge = (discharge: any): Discharge => {
   return discharge;
 };
 
-const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
-  if (!healthCheckRating || !isHealthCheckRating(healthCheckRating)) {
-    throw new Error('Incorrect or missing healthCheckRating: ' + healthCheckRating);
-  }
+//const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
+  //if (!healthCheckRating || !isHealthCheckRating(healthCheckRating)) {
+    //throw new Error('Incorrect or missing healthCheckRating: ' + healthCheckRating);
+  //}
 
-  return healthCheckRating;
-};
+  //return healthCheckRating;
+//};
 
 const parseDiagnosisCodes = (diagnosisCodes: any): string[] => {
   if (!diagnosisCodes) {
@@ -256,12 +258,6 @@ const parseDiagnosisCodes = (diagnosisCodes: any): string[] => {
   }
 
   return diagnosisCodes;
-};
-
-const assertNever = (entry: any): any => {
-  throw new Error(
-    `Unhandled discriminated union member: ${JSON.stringify(entry)}`
-  );
 };
 
 const isString = (text: any): text is string => {
@@ -281,8 +277,8 @@ const isEntry = (param: any): param is EntryType => {
   return Object.values(EntryType).includes(param);
 };
 
-const isHealthCheckRating = (param: any): param is HealthCheckRating => {
-  return Object.values(HealthCheckRating).includes(param);
-};
+//const isHealthCheckRating = (param: any): param is HealthCheckRating => {
+  //return Object.values(HealthCheckRating).includes(param);
+//};
 
-export default { toNewPatientEntry, toNewDiagnoseEntry, toNewEntryEntries };
+export default { toNewPatientEntry, toNewDiagnoseEntry, toNewEntryEntriesOccupationalHealthcare, toNewEntryEntriesHospital };
