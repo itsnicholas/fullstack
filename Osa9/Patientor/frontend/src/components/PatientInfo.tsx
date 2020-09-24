@@ -4,6 +4,7 @@ import { Container, Icon, Button } from "semantic-ui-react";
 import { useParams } from 'react-router-dom';
 import AddHospitalModal from "../AddPatientModal/AddHospitalModal";
 import AddOccupationalHealthcareModal from "../AddPatientModal/AddOccupationalHealthcareModal";
+import AddHealthCheckModal from "../AddPatientModal/AddHealthCheckModal";
 import EntryDetails from "./EntryDetails";
 import { updatePatientList2, setDiagnosisList } from "../state/reducer";
 import { apiBaseUrl } from "../constants";
@@ -16,11 +17,13 @@ const PatientInfo: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [modalHospitalFormOpen, setHospitalFormModalOpen] = React.useState<boolean>(false);
   const [modalOccupationalHealthcareFormOpen, setOccupationalHealthcareFormModalOpen] = React.useState<boolean>(false);
-  
+  const [modalHealthCheckFormOpen, setHealthCheckFormModalOpen] = React.useState<boolean>(false);
+
   const [error, setError] = React.useState<string | undefined>();
 
   const openHospitalFormModal = (): void => setHospitalFormModalOpen(true);
   const openOccupationalHealthcareFormModal = (): void => setOccupationalHealthcareFormModalOpen(true);
+  const openHealthCheckFormModal = (): void => setHealthCheckFormModalOpen(true);
 
   const closeHospitalFormModal = (): void => {
     setHospitalFormModalOpen(false);
@@ -29,6 +32,11 @@ const PatientInfo: React.FC = () => {
 
   const closeOccupationalHealthcareFormModal = (): void => {
     setOccupationalHealthcareFormModalOpen(false);
+    setError(undefined);
+  };
+
+  const closeHealthCheckFormModal = (): void => {
+    setHealthCheckFormModalOpen(false);
     setError(undefined);
   };
 
@@ -67,10 +75,11 @@ const PatientInfo: React.FC = () => {
         `${apiBaseUrl}/api/patients/${id}/entries`,
         values
       );
-      console.log(values, 'values in post function in PatientInfo.tsx')
+      console.log(values, 'values2 in post function in PatientInfo.tsx')
       dispatch(updatePatientList2(updatedPatient));
       closeOccupationalHealthcareFormModal();
       closeHospitalFormModal();
+      closeHealthCheckFormModal();
     } catch (e) {
       console.error(e.response.data);
       setError(e.response.data.error);
@@ -115,6 +124,15 @@ const PatientInfo: React.FC = () => {
             onClose={closeOccupationalHealthcareFormModal}
           />
           <Button onClick={() => openOccupationalHealthcareFormModal()}>Add New Occupational Healthcare Entry</Button>
+          <br />
+          <br />
+          <AddHealthCheckModal
+            modalOpen={modalHealthCheckFormOpen}
+            onSubmit={submitNewEntry}
+            error={error}
+            onClose={closeHealthCheckFormModal}
+          />
+          <Button onClick={() => openHealthCheckFormModal()}>Add New Health Check Entry</Button>
         </Container>
       </div>
     );

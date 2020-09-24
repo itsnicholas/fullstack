@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SickLeave, HealthCheckRating, Discharge, HealthCheckEntryWithoutID, HospitalEntryWithoutID, NewPatientEntry, Gender, Entry, EntryType, DiagnoseEntry, OccupationalHealthcareEntryWithoutID } from './types';
 //import { FinnishSSN } from 'finnish-ssn'
 
