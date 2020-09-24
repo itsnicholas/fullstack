@@ -81,4 +81,10 @@ export interface DiagnoseEntry {
   latin?: string;
 }
 
-export type EntryFormValues = Omit<OccupationalHealthcareEntry, 'id'>;
+export type EntryFormValues = Omit<Entry, 'id'>;
+
+export type HospitalEntryWithoutID = Omit<HospitalEntry, 'id'>;
+
+export type OccupationalHealthcareEntryWithoutID = Omit<OccupationalHealthcareEntry, 'id'>;
+
+export type HealthCheckEntryWithoutID = Omit<HealthCheckEntry, 'id'>;
