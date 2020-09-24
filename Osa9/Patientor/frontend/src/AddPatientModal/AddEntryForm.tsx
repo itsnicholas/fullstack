@@ -23,7 +23,8 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
         description: "",
         date: "",
         specialist: "",
-        employerName: ""
+        employerName: "",
+        sickLeave: { startDate: "", endDate: "" }
       }}
       onSubmit={onSubmit}
       validate={values => {
@@ -79,6 +80,18 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
               label="Employer Name"
               placeholder="Employer Name"
               name="employerName"
+              component={TextField}
+            />
+            <Field
+              label="Sick Leave Start Date"
+              placeholder="Sick Leave Start Date"
+              name="sickLeave.startDate"
+              component={TextField}
+            />
+            <Field
+              label="Sick Leave End Date"
+              placeholder="SickLeave End Date"
+              name="sickLeave.endDate"
               component={TextField}
             />  
             <DiagnosisSelection

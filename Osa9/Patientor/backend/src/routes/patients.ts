@@ -34,20 +34,22 @@ router.post('/:id/entries', (req, res) => {
     const id = req.params.id;
     switch(req.body.type) {
       case "Hospital":
-        return;
+        const newEntries1 = util.toNewEntryEntriesHospital(req.body);
+        const addedEntries1 = patientService.addEntriessHospital(newEntries1, id);
+        return res.json(addedEntries1);
       case "OccupationalHealthcare":
-        const newEntries = util.toNewEntryEntriesOccupationalHealthcare(req.body);
-        const addedEntries = patientService.addEntriesOccupationalHealthcare(newEntries, id);
-        return res.json(addedEntries);
+        const newEntries2 = util.toNewEntryEntriesOccupationalHealthcare(req.body);
+        const addedEntries2 = patientService.addEntriesOccupationalHealthcare(newEntries2, id);
+        return res.json(addedEntries2);
       case "HealthCheck":
-        return;
+        const newEntries3 = util.toNewEntryEntriesHealthCheckEntry(req.body);
+        const addedEntries3 = patientService.addEntriesHealthCheckEntry(newEntries3, id);
+        return res.json(addedEntries3);
       default:
         return assertNever(req.body);
     }
-    
   } catch (e) {
     res.status(400).send(e);
-
   }
 });
 
